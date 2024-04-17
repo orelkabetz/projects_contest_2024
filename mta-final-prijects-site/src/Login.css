@@ -1,0 +1,62 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f0f8ff;
+}
+
+.login-box {
+  border: 2px solid #1e88e5;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  color: #1e88e5;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  color: #1565c0;
+  margin-bottom: 5px;
+}
+
+input {
+  width: 300px;
+  padding: 10px;
+  border: 1px solid #bbdefb;
+  border-radius: 4px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #2196f3;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1976d2;
+}
+
+
+.logo_Mta_Black {
+  width: 300px;
+  height: auto;
+  margin-bottom: 20px;
+  position: relative;
+  right: 20px;
+
+}

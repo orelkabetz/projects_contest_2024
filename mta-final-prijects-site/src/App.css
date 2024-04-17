@@ -1,0 +1,10 @@
+.app-container {
+  text-align: center;
+  padding: 20px;
+}
+
+h1 {
+  color: #175a94;
+  font-size: 64px;
+  margin-bottom: 20px;
+}
