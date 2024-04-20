@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import './Login.css';
 
 const Login = () => {
-  const [usernameID, setUsernameID] = useState('');
+  const [userID, setUsernameID] = useState('');
   const [password, setPassword] = useState('');
 
-  const checkValidInputs = (usernameID, password) => {
-    if (!usernameID.trim() || !password.trim()) {
+  const checkValidInputs = (userID, password) => {
+    if (!userID.trim() || !password.trim()) {
       alert("Please enter both ID number and password");
       return false; // Prevent further execution
     }
-    if (usernameID.length < 9) {
+    if (userID.length < 9) {
       alert("ID number must be at least 9 characters long");
       return false;
     }
@@ -19,9 +19,9 @@ const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if(checkValidInputs(usernameID,password))
+    if(checkValidInputs(userID,password))
     {
-      sendLoginRequest(usernameID, password);
+      sendLoginRequest(userID, password);
     }
     else
       return
@@ -29,19 +29,19 @@ const Login = () => {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    if(checkValidInputs(usernameID,password))
+    if(checkValidInputs(userID,password))
     {
       if (!/^[a-zA-Z0-9]+$/.test(password)) {
         alert("Password can contain letters and numbers only");
         return;
       }
-      sendRegisterRequest(usernameID, password);
+      sendRegisterRequest(userID, password);
     }
     else
       return
   };
 
-  const sendLoginRequest = (usernameID, password) => {
+  const sendLoginRequest = (userID, password) => {
     // Send login request to the server
     
     fetch('http://localhost:3001/login', {
@@ -49,7 +49,7 @@ const Login = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ usernameID, password }),
+      body: JSON.stringify({ userID, password }),
     })
       .then(response => response.json())
       .then(data => {
@@ -63,14 +63,14 @@ const Login = () => {
       });
   };
 
-  const sendRegisterRequest = (usernameID, password) => {
+  const sendRegisterRequest = (userID, password) => {
     // Send register request to the server
     fetch('http://localhost:3001/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ usernameID, password }),
+      body: JSON.stringify({ userID, password }),
     })
       .then(response => response.json())
       .then(data => {
@@ -90,11 +90,11 @@ const Login = () => {
       <div className="login-box">
         <form onSubmit={handleLogin}>
           <div className="form-group">
-            <label htmlFor="usernameID">ID Number:</label>
+            <label htmlFor="userID">ID Number:</label>
             <input
               type="text"
-              id="usernameID"
-              value={usernameID}
+              id="userID"
+              value={userID}
               onChange={(e) => setUsernameID(e.target.value)}
             />
           </div>
