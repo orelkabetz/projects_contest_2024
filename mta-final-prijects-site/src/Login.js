@@ -22,7 +22,7 @@ const Login = () => {
         <h2>Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="username">ID Number:</label>
+            <label htmlFor="username">ID Numberr:</label>
             <input
               type="text"
               id="username"
