@@ -1,0 +1,7 @@
+{
+  "singleQuote": true, // Use single quotes instead of double quotes
+  "trailingComma": "es5", // Add trailing commas in arrays and objects 
+  "printWidth": 80,  // Limit line length to 80 characters
+  "tabWidth": 2, // Use 2 spaces for indentation
+  "semi": true, // Enforce semicolons at the end of statements
+}
