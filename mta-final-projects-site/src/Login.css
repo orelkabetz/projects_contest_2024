@@ -61,3 +61,16 @@ button:hover {
   right: 20px;
 
 }
+
+.register-button, .register-button:visited, .register-button:focus, .register-button:active {
+  outline: none;
+  color: #fafafa; /* Maintain a consistent text color */
+  background-color: transparent; /* Maintain a consistent background */
+  text-decoration: none; /* Remove any underline or other text decorations */
+}
+
+.login-link, .login-link:visited, .login-link:focus, .login-link:active {
+  outline: none;
+  color: #2196f3; /* Maintain a consistent text color */
+  text-decoration: none; /* Remove any underline or other text decorations */
+}

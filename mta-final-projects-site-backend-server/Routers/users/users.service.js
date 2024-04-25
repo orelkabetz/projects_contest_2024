@@ -83,8 +83,25 @@ class UsersSerivce {
    
   }
   
-  async addNewUserToSheet(userID, password) {
-   
+  async registerNewUserWithFullDetails(userID, fullName, email, type, password) {
+    try {
+      // Creating a new user instance
+      const newUser = new UserDB({
+          ID: userID,  
+          name: fullName,
+          email: email,
+          password: password, 
+          type: type,
+      });
+  
+      // Saving the new user to the database
+      await newUser.save();
+      console.log('User added successfully!');
+      return {success: true}
+  } catch (error) {
+      console.error('Error adding user:', error);
+      return {success: false}
+  }
   }
   
 }

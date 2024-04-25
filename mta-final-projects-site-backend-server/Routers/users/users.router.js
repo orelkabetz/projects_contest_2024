@@ -16,9 +16,21 @@ router.post('/login', async (req, res) => {
  }
 });
 
-router.post('/register', (req, res) => {
-  const { userID, password } = req.body;
-  usersSerivce.addNewUserToSheet(userID, password);
+router.post('/add-id', async (req, res) => {
+  try {
+   const { token, ID } = req.body;
+   const userRes = await usersSerivce.addId("/add-id", token, ID);
+ 
+   // More sophisticated logic can be added here to handle login
+   res.json(userRes);
+  } catch (error) {
+   console.log(error);
+  }
+ });
+
+router.post('/registerFullInfo', (req, res) => {
+  const { userID, fullName, email, type, password } = req.body;
+  usersSerivce.registerNewUserWithFullDetails(userID, fullName, email, type, password);
   // More sophisticated logic can be added here to handle registration
   res.json("Registration successful or error message");
 });

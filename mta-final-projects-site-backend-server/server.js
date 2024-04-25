@@ -2,8 +2,25 @@ const { google } = require('googleapis');
 const UserDB = require('./DB/entities/user.entity');
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors'); 
-const userRouter = require("./Routers/users/users.router")
+const cors = require('cors');
+const userRouter = require("./Routers/users/users.router");
+const uploadRouter = require('./Routers/upload_csv');
+
+const app = express();
+const port = process.env.PORT || 3001; // Set the port for the server to listen on
+
+// Enable CORS for all requests
+app.use(cors());
+
+// Middleware to parse JSON request bodies
+app.use(bodyParser.json());
+
+// Use the user routes
+app.use(userRouter);
+
+// Use the upload router
+app.use('/upload', uploadRouter);
+
 // Create a new JWT client to authenticate with the Google Sheets API
 const jwtClient = new google.auth.JWT({
   email: 'roy-sagi@mta-final-projects-site.iam.gserviceaccount.com',
@@ -11,19 +28,8 @@ const jwtClient = new google.auth.JWT({
   scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
 });
 
-
-const app = express();
-const port = process.env.PORT || 3001; // Set the port for the server to listen on
-// Enable CORS for all requests This lets you run both tests server + front and communicate
-app.use(cors());
-
-// Middleware to parse JSON request bodies
-app.use(bodyParser.json());
-app.use(userRouter); // Use the user routes
-
 // Start and init the server
 app.listen(port, async () => {
   await UserDB.init();
   console.log(`Server is running on port ${port}`);
 });
-

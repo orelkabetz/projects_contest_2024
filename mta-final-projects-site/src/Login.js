@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom'; // Import Link for navigation
 import './Login.css';
 
 const Login = () => {
@@ -14,36 +15,18 @@ const Login = () => {
       alert("ID number must be at least 9 characters long");
       return false;
     }
-    return true
-  }
+    return true;
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if(checkValidInputs(userID,password))
-    {
+    if (checkValidInputs(userID, password)) {
       sendLoginRequest(userID, password);
     }
-    else
-      return
-  };
-
-  const handleRegister = (e) => {
-    e.preventDefault();
-    if(checkValidInputs(userID,password))
-    {
-      if (!/^[a-zA-Z0-9]+$/.test(password)) {
-        alert("Password can contain letters and numbers only");
-        return;
-      }
-      sendRegisterRequest(userID, password);
-    }
-    else
-      return
   };
 
   const sendLoginRequest = (userID, password) => {
     // Send login request to the server
-    
     fetch('http://localhost:3001/login', {
       method: 'POST',
       headers: {
@@ -51,37 +34,15 @@ const Login = () => {
       },
       body: JSON.stringify({ userID, password }),
     })
-      .then(response => response.json())
-      .then(data => {
-        // Handle response from the server
-        console.log('Login response:', data);
-        // Redirect or update UI based on the response
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        // Handle errors
-      });
-  };
-
-  const sendRegisterRequest = (userID, password) => {
-    // Send register request to the server
-    fetch('http://localhost:3001/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userID, password }),
+    .then(response => response.json())
+    .then(data => {
+      console.log('Login response:', data);
+      // Redirect or update UI based on the response
     })
-      .then(response => response.json())
-      .then(data => {
-        // Handle response from the server
-        console.log('Register response:', data);
-        // Redirect or update UI based on the response
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        // Handle errors
-      });
+    .catch(error => {
+      console.error('Error:', error);
+      // Handle errors
+    });
   };
 
   return (
@@ -107,10 +68,12 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button onClick={handleLogin} type="submit">Log in</button>
-          <button onClick={handleRegister} className="register-button">Sign up</button>
+          <button type="submit">Log in</button>
+          <button type="submit">
+
+          <Link to="/register" className="register-button">Sign up</Link>  {/* Add a Link to the Register page */}
+          </button>
         </form>
-        
       </div>
     </div>
   );
