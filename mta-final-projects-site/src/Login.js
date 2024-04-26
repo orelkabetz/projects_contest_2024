@@ -41,7 +41,9 @@ const Login = () => {
       if (data.success) {
         // Store the token securely (e.g., in local storage)
         localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
       }
+      window.location.href = '/judge-homepage'; // Redirect to JudgeHome page
       // Redirect or update UI based on the response
     })
     .catch(error => {

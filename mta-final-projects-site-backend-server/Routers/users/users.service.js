@@ -27,6 +27,7 @@ class UsersSerivce {
     //else
     return {
       success: true,
+      user,
       token
     };
    } catch (error) {
