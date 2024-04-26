@@ -8,5 +8,5 @@ const potential_user_Schema = new mongoose.Schema({
 
 
 // Model creation
-const potentialUserDB = client.model('potential_user', potential_user_Schema);
+const potentialUserDB = mongoose.model('potential_user', potential_user_Schema);
 module.exports = potentialUserDB;

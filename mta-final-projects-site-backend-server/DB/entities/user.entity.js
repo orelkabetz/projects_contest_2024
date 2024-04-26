@@ -12,5 +12,5 @@ const userSchema = new mongoose.Schema({
 
 
 // Model creation
-const UserDB = client.model('user', userSchema);
+const UserDB = mongoose.model('user', userSchema);
 module.exports = UserDB;
