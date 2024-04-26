@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for navigation
 import './Login.css';
 
+
 const Login = () => {
   const [userID, setUsernameID] = useState('');
   const [password, setPassword] = useState('');
@@ -37,6 +38,10 @@ const Login = () => {
     .then(response => response.json())
     .then(data => {
       console.log('Login response:', data);
+      if (data.success) {
+        // Store the token securely (e.g., in local storage)
+        localStorage.setItem('token', data.token);
+      }
       // Redirect or update UI based on the response
     })
     .catch(error => {

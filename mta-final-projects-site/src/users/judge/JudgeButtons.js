@@ -5,9 +5,9 @@ import './JudgeButtons.css'; // Import CSS file for styling
 const JudgeButtons = () => {
     return (
         <div className="judge-buttons">
-            <button className="judge-button">Button 1</button>
-            <button className="judge-button">Button 2</button>
-            <button className="judge-button">Button 3</button>
+            <button className="judge-button">Profile Setup</button>
+            <button className="judge-button">View Projects</button>
+            <button className="judge-button">Grade Projects</button>
         </div>
     );
 };
