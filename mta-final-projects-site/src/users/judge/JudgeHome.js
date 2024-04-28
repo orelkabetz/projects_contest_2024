@@ -1,6 +1,7 @@
 import React from 'react';
+import JudgeButtons from './JudgeButtons'; // Import JudgeButtons component
 
-const AdminHome = () => {
+const JudgeHome = () => {
     // Function to handle file upload
     const handleFileUpload = (event) => {
         const file = event.target.files[0]; // Get the file from the event
@@ -27,10 +28,10 @@ const AdminHome = () => {
 
     return (
         <div>
-            <h1>Admin Dashboard</h1>
-            <input type="file" onChange={handleFileUpload} accept=".csv" />
+            <h1>Judge Dashboard</h1>
+            <JudgeButtons /> {/* Add JudgeButtons component */}
         </div>
     );
 };
 
-export default AdminHome;
+export default JudgeHome;
