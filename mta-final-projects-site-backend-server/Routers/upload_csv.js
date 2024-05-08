@@ -8,7 +8,7 @@ const projectsDB = require('../DB/entities/project.entity');
 
 const upload = multer({ dest: 'uploads/' });
 
-router.post('/potential_users', upload.single('file'), (req, res) => {
+router.post('/upload/potential_users', upload.single('file'), (req, res) => {
     const results = [];
   
     fs.createReadStream(req.file.path)
@@ -21,7 +21,7 @@ router.post('/potential_users', upload.single('file'), (req, res) => {
         });
 });
 
-router.post('/projects', upload.single('file'), (req, res) => {
+router.post('/upload/projects', upload.single('file'), (req, res) => {
     const results = [];
   
     fs.createReadStream(req.file.path)

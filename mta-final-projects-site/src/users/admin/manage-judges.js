@@ -13,9 +13,9 @@ const ManageJudges = () => {
             formData.append('file', file);
 
             // API call to the backend to upload judges data
-            fetch('http://localhost:3001/upload/potential_users', {
+            fetch('/upload/potential_users', {
                 method: 'POST',
-                body: formData, // Send the form data with the file
+                body: formData,
             })
             .then(response => response.json())
             .then(data => {

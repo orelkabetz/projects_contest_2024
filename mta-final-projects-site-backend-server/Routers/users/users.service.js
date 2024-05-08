@@ -49,7 +49,7 @@ class UsersSerivce {
     const requiredPerrmisionType = pathSqurity[path];
     const userType = user.type;
     if (!requiredPerrmisionType) {
-      return true
+      return false
     } else {
       if (requiredPerrmisionType === userType) {
         return true
