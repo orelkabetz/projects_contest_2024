@@ -1,5 +1,6 @@
 const express = require('express');
 const { usersSerivce } = require('./users.service');
+const { fetchJudges } = require('../../DB/index');
 const router = express.Router();
 
 // Assuming you have a separate module for handling login and registration
@@ -9,10 +10,18 @@ router.post('/login', async (req, res) => {
     const { userID, password } = req.body;
     const userRes = await usersSerivce.checkLoginDetails(userID, password);
 
-    // More sophisticated logic can be added here to handle login
-    res.json(userRes);
+    if (userRes.success) {
+      res.json({
+        success: true,
+        token: userRes.token,
+        userType: userRes.userType
+      });
+    } else {
+      res.json({ success: false, error: userRes.error });
+    }
   } catch (error) {
     console.log(error);
+    res.status(500).json({ success: false, error: 'Server error' });
   }
 });
 
@@ -35,32 +44,7 @@ router.post('/registerFullInfo', (req, res) => {
   res.json("Registration successful or error message");
 });
 
-// Remove selected IDs from the database
-router.post('/judges/remove-ids', async (req, res) => {
-  const { ids } = req.body;
 
-  try {
-    // Make sure you have properly imported or defined the `collections` object
-    const result = await collections.judges.deleteMany({ _id: { $in: ids } });
-    res.json(result);
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'An error occurred' });
-  }
-});
 
-// Remove selected users from the database
-router.post('/judges/remove-users', async (req, res) => {
-  const { users } = req.body;
-
-  try {
-    // Make sure you have properly imported or defined the `collections` object
-    const result = await collections.judges.deleteMany({ username: { $in: users } });
-    res.json(result);
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'An error occurred' });
-  }
-});
 
 module.exports = router;

@@ -8,20 +8,27 @@ const projectsDB = require('../DB/entities/project.entity');
 
 const upload = multer({ dest: 'uploads/' });
 
-router.post('/upload/potential_users', upload.single('file'), (req, res) => {
+router.post('/potential_users', upload.single('file'), (req, res) => {
     const results = [];
-  
+
     fs.createReadStream(req.file.path)
-        .pipe(csv(['ID']))
-        .on('data', (data) => results.push(data))
+        .pipe(csv())
+        .on('data', (data) => results.push({ ID: data.ID }))
         .on('end', () => {
-            UserDB.insertMany(results, {ordered: false})
+            UserDB.insertMany(results, { ordered: false })
                 .then(dbRes => res.status(201).json(dbRes))
-                .catch(err => res.status(400).json({ error: err.message }));
+                .catch(err => {
+                    if (err.code === 11000) {
+                        // Duplicate key error
+                        res.status(400).json({ error: 'Duplicate IDs found in the file' });
+                    } else {
+                        res.status(400).json({ error: err.message });
+                    }
+                });
         });
 });
 
-router.post('/upload/projects', upload.single('file'), (req, res) => {
+router.post('/projects', upload.single('file'), (req, res) => {
     const results = [];
   
     fs.createReadStream(req.file.path)
