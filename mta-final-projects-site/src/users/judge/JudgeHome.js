@@ -2,6 +2,7 @@ import React from 'react';
 import JudgeButtons from './JudgeButtons'; // Import JudgeButtons component
 
 const JudgeHome = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
     // Function to handle file upload
     const handleFileUpload = (event) => {
         const file = event.target.files[0]; // Get the file from the event
@@ -28,7 +29,8 @@ const JudgeHome = () => {
 
     return (
         <div>
-            <h1>Judge Dashboard</h1>
+            <h2>Judge Dashboard</h2>
+            <h3>Welcome, {user.name}!</h3>
             <JudgeButtons /> {/* Add JudgeButtons component */}
         </div>
     );
