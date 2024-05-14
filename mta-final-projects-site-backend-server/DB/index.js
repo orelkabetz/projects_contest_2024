@@ -1,34 +1,40 @@
-const { connect, ServerApiVersion, connection } = require('mongoose');
+const mongoose = require('mongoose');
 
 // URI from MongoDB Atlas (make sure to replace credentials and database name appropriately)
 const uri = "mongodb+srv://main:vbvh2oarIXqTgB6B@mta-final-projects-site.q4iylbw.mongodb.net/myDatabaseName?retryWrites=true&w=majority&appName=mta-final-projects-site";
 
 // Connect to MongoDB using Mongoose
-connect(uri, {
+mongoose.connect(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  serverApi: ServerApiVersion
+  serverApi: mongoose.ServerApiVersion
 });
 
-const client = connection;
+const getCollections = () => {
+  return new Promise((resolve, reject) => {
+    mongoose.connection.on('error', (err) => {
+      console.error('connection error:', err);
+      reject(err);
+    });
 
-client.on('error', console.error.bind(console, 'connection error:'));
-client.once('open',async function(ref) {
-  const db = connection.db; // Get a reference to the database
+    mongoose.connection.once('open', async function(ref) {
+      const db = mongoose.connection.db; // Get a reference to the database
 
-  try {
-    const names = await db.listCollections().toArray(); 
-    const collections = {};
+      try {
+        const names = await db.listCollections().toArray(); 
+        const collections = {};
 
-    for (const { name } of names) {
-        collections[name] = db.collection(name);
-    }
+        for (const { name } of names) {
+          collections[name] = db.collection(name);
+        }
 
-    module.exports.collections = collections; 
-} catch (err) {
-    console.error("Error fetching collections:", err);
-}
-});
+        resolve(collections);
+      } catch (err) {
+        console.error("Error fetching collections:", err);
+        reject(err);
+      }
+    });
+  });
+};
 
-// You might want to export the mongoose connection
-module.exports = client
+module.exports = { mongoose, getCollections };

@@ -26,31 +26,42 @@ const Login = () => {
     }
   };
 
-  const sendLoginRequest = (userID, password) => {
-    // Send login request to the server
-    fetch('http://localhost:3001/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userID, password }),
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Login response:', data);
-      if (data.success) {
-        // Store the token securely (e.g., in local storage)
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+// ... (previous code remains the same)
+
+const sendLoginRequest = (userID, password) => {
+  // Send login request to the server
+  fetch('http://localhost:3001/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userID, password }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Login response:', data);
+    if (data.success) {
+      // Store the token in local storage or session storage
+      localStorage.setItem('token', data.token);
+      
+      // Redirect based on user type
+      if (data.userType === 'admin') {
+        window.location.href = '/admin';
+      } else if (data.userType === 'judge') {
+        window.location.href = '/judge';
       }
-      window.location.href = '/judge-homepage'; // Redirect to JudgeHome page
-      // Redirect or update UI based on the response
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      // Handle errors
-    });
-  };
+    } else {
+      // Handle login failure
+      alert('Invalid credentials');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    // Handle errors
+  });
+};
+
+// ... (remaining code remains the same)
 
   return (
     <div className="login-container">

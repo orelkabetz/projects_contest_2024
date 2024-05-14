@@ -6,37 +6,38 @@ const pathSqurity = {
   "/add-points": "judge"
 }
 
-const secretKey='your_secret_key'
+const secretKey='SuperKey123'
+
+
 
 class UsersSerivce {
-  checkLoginDetails = async (userID,password) => {
-   try {
-    const user = await UserDB.findOne({ ID: userID, password: password }).lean();
-    if (!user) {
+  checkLoginDetails = async (userID, password) => {
+    try {
+      const user = await UserDB.findOne({ ID: userID, password: password }).lean();
+      if (!user) {
+        return {
+          success: false,
+          error: "User not found"
+        }
+      }
+      const token = jwt.sign({ data: {
+        name: user.name,
+        email: user.email,
+        type: user.type,
+      } }, secretKey, { expiresIn: '100y' });
+  
+      return {
+        success: true,
+        token,
+        userType: user.type
+      };
+    } catch (error) {
+      console.log(error);
       return {
         success: false,
-        error: "User not found"
+        error: "Unknown error server - login"
       }
     }
-    const token = jwt.sign({ data: {
-      name: user.name,
-      email: user.email,
-      type: user.type,
-    } },secretKey, { expiresIn: '100y' });  // Using 100 years to simulate "infinity"
-
-    //else
-    return {
-      success: true,
-      user,
-      token
-    };
-   } catch (error) {
-    console.log(error);
-    return {
-      success: false,
-      error: "Unknown error server - login"
-    }
-   }
   }
 
   auth(token) {
@@ -48,7 +49,7 @@ class UsersSerivce {
     const requiredPerrmisionType = pathSqurity[path];
     const userType = user.type;
     if (!requiredPerrmisionType) {
-      return true
+      return false
     } else {
       if (requiredPerrmisionType === userType) {
         return true
@@ -104,6 +105,8 @@ class UsersSerivce {
       return {success: false}
   }
   }
+  
+
   
 }
 /**
