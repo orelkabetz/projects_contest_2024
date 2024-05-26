@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // Import Link for navigation
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom'; // Import Link for navigation
 import './Login.css';
+import userStore from './stores/UserStore';
+import { observer } from 'mobx-react-lite';
+import { useStore } from './stores';
 
-
-const Login = () => {
+const Login = observer(() => {
+  const {userStore} = useStore()
   const [userID, setUsernameID] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const checkValidInputs = (userID, password) => {
     if (!userID.trim() || !password.trim()) {
@@ -25,43 +29,41 @@ const Login = () => {
       sendLoginRequest(userID, password);
     }
   };
+  
 
-// ... (previous code remains the same)
-
-const sendLoginRequest = (userID, password) => {
-  // Send login request to the server
-  fetch('http://localhost:3001/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ userID, password }),
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log('Login response:', data);
-    if (data.success) {
-      // Store the token in local storage or session storage
-      localStorage.setItem('token', data.token);
-      
-      // Redirect based on user type
-      if (data.userType === 'admin') {
-        window.location.href = '/admin';
-      } else if (data.userType === 'judge') {
-        window.location.href = '/judge';
+  const sendLoginRequest = (userID, password) => {
+    // Send login request to the server
+    fetch('http://localhost:3001/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userID, password }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Login response:', data);
+      if (data.success) {
+        // Store the token in local storage or session storage
+        localStorage.setItem('token', data.token);
+        userStore.user = data.user;
+        // Redirect based on user type
+        if (data.user.type === 'admin') {
+          navigate('/admin');
+        } else if (data.user.type === 'judge') {
+          navigate('/judge');
+        }
+      } else {
+        // Handle login failure
+        alert('Invalid credentials');
       }
-    } else {
-      // Handle login failure
-      alert('Invalid credentials');
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    // Handle errors
-  });
-};
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      // Handle errors
+    });
+  };
 
-// ... (remaining code remains the same)
 
   return (
     <div className="login-container">
@@ -95,6 +97,6 @@ const sendLoginRequest = (userID, password) => {
       </div>
     </div>
   );
-};
+});
 
 export default Login;

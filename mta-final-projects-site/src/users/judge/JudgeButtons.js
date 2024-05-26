@@ -1,18 +1,20 @@
 // JudgeButtons.js
 import React from 'react';
 import './JudgeButtons.css'; // Import CSS file for styling
-
-const JudgeButtons = () => {
+import { useNavigate } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+const JudgeButtons = observer(() => {
+  const navigate = useNavigate()
   const handleProfileSetupClick = () => {
-    window.location.href = '/profile-setup';
+    navigate("/profile-setup");
   };
 
   const handleViewProjectsClick = () => {
-    window.location.href = '/view-projects';
+    navigate("/view-projects");
   };
 
   const handleGradeProjectsClick = () => {
-    window.location.href = '/grade-projects';
+    navigate("/grade-projects");
   };
 
   return (
@@ -22,6 +24,6 @@ const JudgeButtons = () => {
       <button className="judge-button" onClick={handleGradeProjectsClick}>Grade Projects</button>
     </div>
   );
-};
+});
 
 export default JudgeButtons;

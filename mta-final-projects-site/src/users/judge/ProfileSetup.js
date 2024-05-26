@@ -1,6 +1,7 @@
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 
-const ProfileSetup = () => {
+const ProfileSetup = observer(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     return (
         <div>
@@ -8,6 +9,6 @@ const ProfileSetup = () => {
             <h3>Welcome, {user.name}!</h3>
         </div>
     );
-};
+});
 
 export default ProfileSetup;

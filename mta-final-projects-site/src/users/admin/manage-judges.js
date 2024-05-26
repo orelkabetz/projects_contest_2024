@@ -1,6 +1,7 @@
+import { observer } from 'mobx-react-lite';
 import React, { useState, useEffect } from 'react';
 
-const ManageJudges = () => {
+const ManageJudges = observer(() => {
     const [judges, setJudges] = useState([]);
     const [potentialJudges, setPotentialJudges] = useState([]);
     const [selectedIds, setSelectedIds] = useState([]);
@@ -311,6 +312,6 @@ const ManageJudges = () => {
             </div>
         </div>
     );
-};
+});
 
 export default ManageJudges;

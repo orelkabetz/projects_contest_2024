@@ -8,7 +8,9 @@ const pathSqurity = {
 
 const secretKey='SuperKey123'
 
-
+const FAILED_RESOULT = {
+  success: false,
+}
 
 class UsersSerivce {
   checkLoginDetails = async (userID, password) => {
@@ -21,15 +23,18 @@ class UsersSerivce {
         }
       }
       const token = jwt.sign({ data: {
+        id: user.ID,
         name: user.name,
         email: user.email,
         type: user.type,
       } }, secretKey, { expiresIn: '100y' });
-  
       return {
         success: true,
         token,
-        userType: user.type
+        user: {
+          type: user.type,
+          name: user.name
+        }
       };
     } catch (error) {
       console.log(error);
@@ -38,6 +43,19 @@ class UsersSerivce {
         error: "Unknown error server - login"
       }
     }
+  }
+
+  async checkToken(token) {
+    if (!token) {
+      console.error("No Token")
+      return;
+    }
+    const user = jwt.verify(token, secretKey)
+    if (!user) {
+      console.error("No valid token")
+      return;
+    }
+    return user.data
   }
 
   auth(token) {
