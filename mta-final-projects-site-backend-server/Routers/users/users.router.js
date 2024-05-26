@@ -11,11 +11,7 @@ router.post('/login', async (req, res) => {
     const userRes = await usersSerivce.checkLoginDetails(userID, password);
 
     if (userRes.success) {
-      res.json({
-        success: true,
-        token: userRes.token,
-        userType: userRes.userType
-      });
+      res.json(userRes);
     } else {
       res.json({ success: false, error: userRes.error });
     }
@@ -42,6 +38,35 @@ router.post('/registerFullInfo', (req, res) => {
   usersSerivce.registerNewUserWithFullDetails(userID, fullName, email, type, password);
   // More sophisticated logic can be added here to handle registration
   res.json("Registration successful or error message");
+});
+
+router.post("/example-guarded-data", async (req, res) => {
+  const { token } = req.body;
+  const user = await usersSerivce.checkToken(token);
+  if (user?.type === "admin") {
+    // admmin shit
+  } else if (user?.type === "judge") {
+    // judge shit
+  }
+  // kick them out
+})
+
+router.post('/check-token', async (req, res) => {
+  try {
+    const { token } = req.body;
+    const user = await usersSerivce.checkToken(token);
+    if (!user) {
+      return {
+        success: false,
+        error: "Failed to auth"
+      }
+    }
+    const userToReturn =  {type: user.type, name: user.name} 
+    res.json({success:true, user: userToReturn });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
 });
 
 

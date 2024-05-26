@@ -1,13 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const AdminHome = () => {
+import {observer} from "mobx-react-lite"
+const AdminHome = observer(() => {
     const navigate = useNavigate();
 
     const handleButtonClick = (route) => {
         navigate(route);
     };
-
     return (
         <div>
             <h1>Admin Dashboard</h1>
@@ -27,6 +26,6 @@ const AdminHome = () => {
             </div>
         </div>
     );
-};
+});
 
-export default AdminHome;
+export  {AdminHome};

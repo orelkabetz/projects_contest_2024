@@ -1,6 +1,7 @@
+import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
 
-const ManageProjects = () => {
+const ManageProjects = observer(() => {
     const [projects, setProjects] = useState([]);
 
     // Function to handle file upload
@@ -62,6 +63,6 @@ const ManageProjects = () => {
             </div>
         </div>
     );
-};
+});
 
 export default ManageProjects;

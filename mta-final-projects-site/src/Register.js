@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Login from './Login';
 import './Login.js';
+import { observer } from 'mobx-react-lite';
 
-const Register = () => {
+const Register = observer(() => {
   const [userID, setUsernameID] = useState('');
   const [fullName, setFullName] = useState(''); // State for full name
   const [email, setEmail] = useState(''); // State for email
@@ -88,6 +89,6 @@ const Register = () => {
       </div>
     </div>
   );
-};
+});
 
 export default Register;
