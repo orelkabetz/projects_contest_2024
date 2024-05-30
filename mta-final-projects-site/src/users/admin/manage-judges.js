@@ -1,5 +1,11 @@
 import { observer } from 'mobx-react-lite';
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import ReactDOM from 'react-dom/client';
+
+
+const MySwal = withReactContent(Swal);
 
 const ManageJudges = observer(() => {
     const [judges, setJudges] = useState([]);
@@ -24,11 +30,11 @@ const ManageJudges = observer(() => {
             .then(data => {
                 console.log('Success:', data);
                 fetchPotentialJudges(); // Refresh the potential judges list after successful upload
-                alert('Potential judges data uploaded successfully!');
+                MySwal.fire('Success', 'Potential judges data uploaded successfully!', 'success');
             })
             .catch((error) => {
                 console.error('Error:', error);
-                alert('Error uploading potential judges data!');
+                MySwal.fire('Error', 'Error uploading potential judges data!', 'error');
             });
         }
     };
@@ -59,7 +65,6 @@ const ManageJudges = observer(() => {
     // Function to remove selected IDs from the database
     const removeSelectedIds = (selectedPotentialJudges) => {
         const potentialUserIds = selectedPotentialJudges;
-        console.log(potentialUserIds);
         fetch('http://localhost:3001/admin/judges/remove-ids', {
             method: 'POST',
             headers: {
@@ -80,8 +85,8 @@ const ManageJudges = observer(() => {
 
     // Function to remove selected users from the database
     const removeSelectedUsers = (selectedJudges) => {
+
         const userIds = selectedJudges;
-        console.log(selectedJudges);
 
         fetch('http://localhost:3001/admin/judges/remove-users', {
             method: 'POST',
@@ -103,172 +108,206 @@ const ManageJudges = observer(() => {
 
     useEffect(() => {
         fetchJudges();
-        window.removeSelectedUsers = removeSelectedUsers;
-        window.removeSelectedIds = removeSelectedIds;
-        window.addNewPotentialJudge = addNewPotentialJudge;
+        fetchPotentialJudges();
     }, []);
     
-    const openJudgesListWindow = () => {
-        const judgesListWindow = window.open('', 'Judges List', 'width=600,height=400');
-        
-        fetchJudges();
+    const openJudgesListModal = () => {
+        MySwal.fire({
+            title: 'Registered Judges',
+            html: '<div id="judgesListContainer"></div>',
+            showCancelButton: true,
+            confirmButtonText: 'Remove Selected Judges',
+            cancelButtonText: 'Close',
+            preConfirm: () => {
+                const selectedJudges = JSON.parse(localStorage.getItem('selectedJudges')) || [];
+                removeSelectedJudges(selectedJudges);
+            },
+            didOpen: () => {
+                renderJudgesList();
+            },
+        });
+    };
     
-        judgesListWindow.document.write(`
-        <html>
-        <head>
-            <title>Judges List</title>
-            <style>
-                .selected {
-                    background-color: #f0f0f0;
+    const renderJudgesList = () => {
+        const judgesListContainer = document.getElementById('judgesListContainer');
+        if (judgesListContainer) {
+            const root = ReactDOM.createRoot(judgesListContainer);
+            root.render(<JudgesList />);
+        }
+    };
+    
+    const JudgesList = () => {
+        const [filterText, setFilterText] = React.useState('');
+        const [selectedJudges, setSelectedJudges] = React.useState([]);
+    
+        React.useEffect(() => {
+            localStorage.setItem('selectedJudges', JSON.stringify(selectedJudges));
+        }, [selectedJudges]);
+    
+        const toggleSelection = (id) => {
+            setSelectedJudges((prevSelectedJudges) => {
+                if (prevSelectedJudges.includes(id)) {
+                    return prevSelectedJudges.filter((judgeId) => judgeId !== id);
+                } else {
+                    return [...prevSelectedJudges, id];
                 }
-            </style>
-        </head>
-        <body>
-            <h2>Registered Judges</h2>
-            <input type="text" id="filterInput" placeholder="Filter by name or ID" oninput="filterJudges()">
-            <ul id="judgesList">
-                ${judges.map((judge, index) => `
-                    <li>
-                        <input type="checkbox" id="judge-${index}" ${selectedJudges.includes(judge.ID.toString()) ? 'checked' : ''} onchange="toggleSelection('${judge.ID.toString()}', ${index})">
-                        <label for="judge-${index}">Name: ${judge.name}, ID: ${judge.ID}</label>
-                    </li>
-                `).join('')}
-            </ul>
-            <button onclick="removeSelectedJudges()">Remove Selected judges</button>
-            <button onclick="window.close()">Close</button>
+            });
+        };
     
-                    <script>
-                        const selectedJudges = ${JSON.stringify(selectedJudges)};
+        return (
+            <div>
+                <input
+                    type="text"
+                    id="filterInput"
+                    placeholder="Filter by name or ID"
+                    onChange={(e) => setFilterText(e.target.value)}
+                />
+                <ul id="judgesList" style={{ listStyleType: 'none', padding: 0 }}>
+                    {judges
+                        .filter(
+                            (judge) =>
+                                judge.name.toLowerCase().includes(filterText.toLowerCase()) ||
+                                judge.ID.toString().includes(filterText)
+                        )
+                        .map((judge, index) => (
+                            <li key={judge.ID} style={{ marginBottom: '10px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc', padding: '10px' }}>
+                                    <label htmlFor={`judge-${index}`} style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0 }}>
+                                        {judge.name} (ID: {judge.ID})
+                                    </label>
+                                    <input
+                                        type="checkbox"
+                                        id={`judge-${index}`}
+                                        checked={selectedJudges.includes(judge.ID.toString())}
+                                        onChange={() => toggleSelection(judge.ID.toString())}
+                                        style={{ marginLeft: '10px' }}
+                                    />
+                                </div>
+                            </li>
+                        ))}
+                </ul>
+            </div>
+        );
+    };
     
-                        function toggleSelection(judgeId, index) {
-                            const checkbox = document.getElementById('judge-' + index);
-                            const isChecked = checkbox.checked;
-                        
-                            if (isChecked) {
-                                selectedJudges.push(judgeId);
-                            } else {
-                                const index = selectedJudges.indexOf(judgeId);
-                                if (index > -1) {
-                                    selectedJudges.splice(index, 1);
-                                }
-                            }
-                            console.log('Selected Judges:', selectedJudges);
-                        }
     
-                        function removeSelectedJudges() {
-                            console.log('Removing Selected Judges:', selectedJudges);
-                            window.opener.removeSelectedUsers(selectedJudges);
-                             window.close();
+    useEffect(() => {
+        renderJudgesList();
+    }, [selectedJudges, filterText]);
 
-                        }
-    
-                        function filterJudges() {
-                            const filterText = document.getElementById('filterInput').value.toLowerCase();
-                            const judgeItems = document.getElementById('judgesList').children;
-    
-                            for (const judgeItem of judgeItems) {
-                                const judgeName = judgeItem.querySelector('label').textContent.toLowerCase();
-                                const isMatch = judgeName.includes(filterText);
-                                judgeItem.style.display = isMatch ? 'block' : 'none';
-                            }
-                        }
-                    </script>
-                </body>
-            </html>
-        `);
+    const removeSelectedJudges = (selectedJudges) => {
+        removeSelectedUsers(selectedJudges);
     };
 
-    const openPotentialJudgesListWindow = () => {
-        const potentialJudgesListWindow = window.open('', 'Potential Judges List', 'width=600,height=400');
-        fetchPotentialJudges();
-        console.log(potentialJudges);
-        potentialJudgesListWindow.document.write(`
-            <html>
-            <head>
-                <title>Potential Judges List</title>
-                <style>
-                    .selected {
-                        background-color: #f0f0f0;
-                    }
-                </style>
-            </head>
-            <body>
-                <h2>Potential Judges</h2>
-                <input type="text" id="filterInput" placeholder="Filter by ID" oninput="filterJudges()">
-                <ul id="potentialJudgesList">
-                    ${potentialJudges.map((judge, index) => `
-                        <li>
-                            <input type="checkbox" id="judge-${index}" ${selectedJudges.includes(judge.ID.toString()) ? 'checked' : ''} onchange="toggleSelection('${judge.ID.toString()}', ${index})">
-                            <label for="judge-${index}">ID: ${judge.ID}</label>
-                        </li>
-                    `).join('')}
+    const toggleSelection = (judgeId) => {
+        const selectedIndex = selectedJudges.indexOf(judgeId);
+        let newSelectedJudges = [];
+
+        if (selectedIndex === -1) {
+            newSelectedJudges = [...selectedJudges, judgeId];
+        } else {
+            newSelectedJudges = selectedJudges.filter((selectedId) => selectedId !== judgeId);
+        }
+
+        setSelectedJudges(newSelectedJudges);
+    };
+
+    const openPotentialJudgesListModal = () => {
+        MySwal.fire({
+            title: 'Potential Judges',
+            html: '<div id="potentialJudgesListContainer"></div>',
+            showCancelButton: true,
+            confirmButtonText: 'Remove Selected Potential Judges',
+            cancelButtonText: 'Close',
+            preConfirm: () => {
+                const selectedIds = JSON.parse(localStorage.getItem('selectedPotentialJudges')) || [];
+                removeSelectedIdsInternal(selectedIds);
+            },
+            didOpen: () => {
+                renderPotentialJudgesList();
+            },
+        });
+    };
+    
+    const renderPotentialJudgesList = () => {
+        const potentialJudgesListContainer = document.getElementById('potentialJudgesListContainer');
+        if (potentialJudgesListContainer) {
+            const root = ReactDOM.createRoot(potentialJudgesListContainer);
+            root.render(<PotentialJudgesList />);
+        }
+    };
+    
+    const PotentialJudgesList = () => {
+        const [filterText, setFilterText] = React.useState('');
+        const [selectedIds, setSelectedIds] = React.useState([]);
+    
+        React.useEffect(() => {
+            localStorage.setItem('selectedPotentialJudges', JSON.stringify(selectedIds));
+        }, [selectedIds]);
+    
+        const toggleSelection = (id) => {
+            setSelectedIds((prevSelectedIds) => {
+                if (prevSelectedIds.includes(id)) {
+                    return prevSelectedIds.filter((judgeId) => judgeId !== id);
+                } else {
+                    return [...prevSelectedIds, id];
+                }
+            });
+        };
+    
+        return (
+            <div>
+                <input
+                    type="text"
+                    id="filterInput"
+                    placeholder="Filter by ID"
+                    onChange={(e) => setFilterText(e.target.value)}
+                />
+                <ul id="potentialJudgesList" style={{ listStyleType: 'none', padding: 0 }}>
+                    {potentialJudges
+                        .filter((judge) => judge.ID.toString().includes(filterText))
+                        .map((judge, index) => (
+                            <li key={judge.ID} style={{ marginBottom: '10px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc', padding: '10px' }}>
+                                    <label htmlFor={`potential-judge-${index}`} style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0 }}>
+                                        ID: {judge.ID}
+                                    </label>
+                                    <input
+                                        type="checkbox"
+                                        id={`potential-judge-${index}`}
+                                        checked={selectedIds.includes(judge.ID.toString())}
+                                        onChange={() => toggleSelection(judge.ID.toString())}
+                                        style={{ marginLeft: '10px' }}
+                                    />
+                                </div>
+                            </li>
+                        ))}
                 </ul>
                 <div>
-                    <input type="text" id="newIdInput" placeholder="Enter new ID">
-                    <button onclick="addNewId()">Add New ID</button>
+                    <input type="text" id="newIdInput" placeholder="Enter new ID" />
+                    <button onClick={addNewId}>Add New ID</button>
                 </div>
-                <button onclick="removeSelectedIds()">Remove Selected Potential Judges</button>
-                <button onclick="window.close()">Close</button>
+            </div>
+        );
+    };
     
-                    <script>
-                        const selectedJudges = ${JSON.stringify(selectedJudges)};
+    React.useEffect(() => {
+        renderPotentialJudgesList();
+    }, [selectedIds, filterText]);
     
-                        function toggleSelection(judgeId, index) {
-                            const checkbox = document.getElementById('judge-' + index);
-                            const isChecked = checkbox.checked;
-                        
-                            if (isChecked) {
-                                selectedJudges.push(judgeId);
-                            } else {
-                                const index = selectedJudges.indexOf(judgeId);
-                                if (index > -1) {
-                                    selectedJudges.splice(index, 1);
-                                }
-                            }
-                            console.log('Selected Judges:', selectedJudges);
-                        }
-    
-                        function removeSelectedIds() {
-                            console.log('Removing Selected Judges:', selectedJudges);
-                            window.opener.removeSelectedIds(selectedJudges);
-                             window.close();
-
-                        }
-    
-                        function filterJudges() {
-                            const filterText = document.getElementById('filterInput').value.toLowerCase();
-                            const judgeItems = document.getElementById('judgesList').children;
-    
-                            for (const judgeItem of judgeItems) {
-                                const judgeName = judgeItem.querySelector('label').textContent.toLowerCase();
-                                const isMatch = judgeName.includes(filterText);
-                                judgeItem.style.display = isMatch ? 'block' : 'none';
-                            }
-                        }
-
-                        function addNewId(callback) {
-                            const newIdInput = document.getElementById('newIdInput');
-                            const newId = newIdInput.value.trim();
-                            if (newId) {
-                                window.opener.addNewPotentialJudge(newId, callback);
-                                newIdInput.value = '';
-                            }
-                        }
-        
-                        function refreshList() {
-                            window.opener.fetchPotentialJudges()
-                                .then(() => {
-                                    window.location.reload(); // Reload the popup window to update the list
-                                });
-                        }
-                    </script>
-                </body>
-            </html>
-        `);
+    const removeSelectedIdsInternal = (selectedIds) => {
+        removeSelectedIds(selectedIds);
     };
 
-    const applySelectedJudges = (selectedJudges) => {
-        setSelectedJudges(selectedJudges);
+    const addNewId = () => {
+        const newIdInput = document.getElementById('newIdInput');
+        const newId = newIdInput.value.trim();
+        if (newId) {
+            addNewPotentialJudge(newId, () => {
+                newIdInput.value = '';
+                fetchPotentialJudges();
+            });
+        }
     };
 
     const addNewPotentialJudge = (newId, callback) => {
@@ -282,7 +321,6 @@ const ManageJudges = observer(() => {
             .then(response => response.json())
             .then(data => {
                 console.log('Success:', data);
-                fetchPotentialJudges(); // Refresh the potential judges list after adding a new ID
                 if (callback) {
                     callback(); // Call the callback function after successful insertion
                 }
@@ -292,23 +330,20 @@ const ManageJudges = observer(() => {
             });
     };
 
-    // Fetch judges data when the component mounts
-    
-
     return (
         <div>
             <h1>Manage Judges</h1>
             <div>
-                <h2>Upload Potential Judges csv</h2>
+                <h2>Upload Potential Judges CSV</h2>
                 <input type="file" onChange={handleFileUpload} accept=".csv" />
             </div>
             <div>
                 <h2>Judges List</h2>
-                <button onClick={openJudgesListWindow}>Show Judges List</button>
+                <button onClick={openJudgesListModal}>Show Judges List</button>
             </div>
             <div>
                 <h2>Potential Judges List</h2>
-                <button onClick={openPotentialJudgesListWindow}>Show Potential Judges List</button>
+                <button onClick={openPotentialJudgesListModal}>Show Potential Judges List</button>
             </div>
         </div>
     );
