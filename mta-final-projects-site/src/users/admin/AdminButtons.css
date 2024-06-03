@@ -1,0 +1,10 @@
+.admin-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Optional: Center the buttons horizontally */
+  }
+  
+  .admin-button {
+    margin-bottom: 10px; /* Add some spacing between buttons */
+  }
+  

@@ -12,7 +12,7 @@ const ManageProjects = observer(() => {
             formData.append('file', file);
 
             // API call to the backend to upload projects data
-            fetch('http://localhost:3001/upload/potential_users', {
+            fetch('http://localhost:3001/upload/projects', {
                 method: 'POST',
                 body: formData, // Send the form data with the file
             })

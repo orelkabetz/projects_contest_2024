@@ -30,7 +30,7 @@ getCollections()
 
     router.get('/judges/judgesList', async (req, res) => {
       try {
-        const judges = await collections.users.find({}).toArray();
+        const judges = await collections.users.find({}, { projection: { name: 1, ID: 1} }).toArray();
         res.json(judges);
       } catch (error) {
         console.error('Error fetching judges:', error);
