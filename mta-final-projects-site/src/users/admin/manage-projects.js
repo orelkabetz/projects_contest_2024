@@ -1,25 +1,28 @@
 import { observer } from 'mobx-react-lite';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
+import CustomCarousel from './Carousel'; // Import Carousel component
+
 
 const ManageProjects = observer(() => {
     const [projects, setProjects] = useState([]);
 
-    // Function to handle file upload
     const handleFileUpload = (event) => {
         const file = event.target.files[0]; // Get the file from the event
         if (file) {
             const formData = new FormData();
             formData.append('file', file);
 
-            // API call to the backend to upload projects data
             fetch('http://localhost:3001/upload/projects', {
                 method: 'POST',
-                body: formData, // Send the form data with the file
+                body: formData,
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Success:', data);
-                setProjects(data); // Update the projects state with the response data
+                console.log('Upload success:', data);
+                setProjects(data);
                 alert('Projects data uploaded successfully!');
             })
             .catch((error) => {
@@ -28,6 +31,27 @@ const ManageProjects = observer(() => {
             });
         }
     };
+
+    const fetchProjects = () => {
+        fetch('http://localhost:3001/admin/projects/projectsList')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Fetched projects:', data);
+            setProjects(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    };
+
+    useEffect(() => {
+        fetchProjects();
+    }, []);
 
     return (
         <div>
@@ -39,24 +63,11 @@ const ManageProjects = observer(() => {
             <div>
                 <h2>Projects List</h2>
                 {projects.length > 0 ? (
-                    <ul>
-                        {projects.map((project, index) => (
-                            <li key={index}>
-                                <strong>Title:</strong> {project.Title}<br />
-                                <strong>Workshop Name:</strong> {project.WorkshopName}<br />
-                                <strong>Workshop ID:</strong> {project.WorkshopId}<br />
-                                <strong>Project Number:</strong> {project.ProjectNumber}<br />
-                                <strong>Project Info:</strong> {project.ProjectInfo}<br />
-                                <strong>Project Owners:</strong> {project.ProjectOwners}<br />
-                                <strong>Lecturer:</strong> {project.Lecturer}<br />
-                                <strong>Student Name:</strong> {project.StudentName}<br />
-                                <strong>Student Email:</strong> {project.StudentEmail}<br />
-                                <strong>Student Phone:</strong> {project.StudentPhone}<br />
-                                <strong>Project Year:</strong> {project.ProjectYear}<br />
-                                {/* Add more fields as needed */}
-                            </li>
-                        ))}
-                    </ul>
+                    <div className="carousel-container">
+                        <div className="card">
+                            <CustomCarousel projects={projects} />
+                        </div>
+                    </div>
                 ) : (
                     <p>No projects data available.</p>
                 )}

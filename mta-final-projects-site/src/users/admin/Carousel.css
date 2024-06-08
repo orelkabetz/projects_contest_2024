@@ -1,0 +1,39 @@
+/* Carousel.css */
+
+.carousel-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* Adjust margin as needed */
+}
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 50%;
+    position: relative; /* Position arrows relative to the card */
+}
+
+/* Custom styles for carousel arrows */
+.react-multi-carousel-arrow {
+    background-color: transparent;
+    border: none;
+    font-size: 24px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+.react-multi-carousel-arrow::before {
+    color: #333;
+}
+
+.react-multi-carousel-arrow-left {
+    left: 0;
+}
+
+.react-multi-carousel-arrow-right {
+    right: 0;
+}
