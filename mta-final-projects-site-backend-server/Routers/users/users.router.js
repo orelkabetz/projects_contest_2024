@@ -33,11 +33,19 @@ router.post('/add-id', async (req, res) => {
   }
 });
 
-router.post('/registerFullInfo', (req, res) => {
+router.post('/registerFullInfo', async (req, res) => {
   const { userID, fullName, email, type, password } = req.body;
-  usersSerivce.registerNewUserWithFullDetails(userID, fullName, email, type, password);
-  // More sophisticated logic can be added here to handle registration
-  res.json("Registration successful or error message");
+  try {
+    const result = await usersSerivce.registerNewUserWithFullDetails(userID, fullName, email, type, password);
+    if (result.success) {
+      res.json({ success: true, message: 'Registration successful' });
+    } else {
+      res.json({ success: false, error: result.error });
+    }
+  } catch (error) {
+    console.error('Error during registration:', error);
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
 });
 
 router.post("/example-guarded-data", async (req, res) => {
