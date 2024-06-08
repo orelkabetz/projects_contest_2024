@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import ReactDOM from 'react-dom/client';
+import BackButton from '../../BackButton';
+
 
 
 const MySwal = withReactContent(Swal);
@@ -330,11 +332,49 @@ const ManageJudges = observer(() => {
                 console.error('Error:', error);
             });
     };
+    const addNewPreference = async () => {
+        const { value: newPreference } = await MySwal.fire({
+          title: 'Add New Preference',
+          input: 'text',
+          inputLabel: 'Preference Name',
+          inputPlaceholder: 'Enter the new preference',
+          showCancelButton: true,
+          confirmButtonText: 'Save',
+          cancelButtonText: 'Cancel',
+          inputValidator: (value) => {
+            if (!value) {
+              return 'Please enter a preference name';
+            }
+          },
+        });
+    
+        if (newPreference) {
+          try {
+            const response = await fetch('http://localhost:3001/admin/preferences/add', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ preference: newPreference }),
+            });
+    
+            if (response.ok) {
+              MySwal.fire('Success', 'Preference added successfully!', 'success');
+            } else {
+              MySwal.fire('Error', 'Failed to add preference', 'error');
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            MySwal.fire('Error', 'An error occurred while adding the preference', 'error');
+          }
+        }
+      };
 
-    return (
+      return (
         <div>
           <h1>Manage Judges</h1>
           <div>
+            <BackButton route="/admin" />
             <h2>Upload Potential Judges CSV</h2>
             <input type="file" onChange={handleFileUpload} accept=".csv" />
           </div>
@@ -345,6 +385,10 @@ const ManageJudges = observer(() => {
           <div>
             <h2>Potential Judges List</h2>
             <button onClick={openPotentialJudgesListModal}>Show Potential Judges List</button>
+          </div>
+          <div>
+            <h2>Preference Subjects Options</h2>
+            <button onClick={addNewPreference}>Add Preference</button>
           </div>
         </div>
       );

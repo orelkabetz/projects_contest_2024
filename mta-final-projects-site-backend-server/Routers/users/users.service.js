@@ -1,6 +1,7 @@
 const potentialUserDB = require("../../DB/entities/potential_users.entity");
 const UserDB = require("../../DB/entities/user.entity")
 const jwt = require('jsonwebtoken');
+const availablePreferencesDB = require("../../DB/entities/available_preferences.entity");
 
 const pathSqurity = {
   "/add-id": "admin",
@@ -88,21 +89,7 @@ class UsersSerivce {
       }
     }
   }
-  
-  addUser(path, token, userName, password) {
 
-    const requestSender = this.auth(token);
-    if (requestSender.type !== "admin") {
-      return {
-        success: false,
-        error: "unathorized"
-      }
-    }
-  }
-
-  checkIfUserExist = async (userID) => {
-   
-  }
   async checkIfUserExistInPotentialUsers(userID) {
     try {
       const user = await potentialUserDB.findOne({ ID: userID }).lean();
@@ -157,6 +144,42 @@ class UsersSerivce {
     }
   }
 
+  async getPreferences() {
+    try {
+      const preferences = await availablePreferencesDB.find({}, 'ID');
+      return preferences;
+    } catch (error) {
+      console.error('Error fetching preferences:', error);
+      throw error;
+    }
+  }
+
+  async savePreferences(userID, selectedPreferences) {
+    try {
+      const user = await UserDB.findOne({ ID: userID });
+      if (!user) {
+        return { success: false, error: 'User not found' };
+      }
+      user.selected_preferences = selectedPreferences;
+      await user.save();
+      return { success: true };
+    } catch (error) {
+      console.error('Error saving preferences:', error);
+      return { success: false, error: 'Failed to save preferences' };
+    }
+  }
+  async getUserPreferences(userID) {
+    try {
+      const user = await UserDB.findOne({ ID: userID });
+      if (!user) {
+        return [];
+      }
+      return user.selected_preferences;
+    } catch (error) {
+      console.error('Error fetching user preferences:', error);
+      throw error;
+    }
+  }
   
 }
 /**

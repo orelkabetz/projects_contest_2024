@@ -3,18 +3,20 @@ import React from 'react';
 import './JudgeButtons.css'; // Import CSS file for styling
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
+
 const JudgeButtons = observer(() => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
   const handleProfileSetupClick = () => {
-    navigate("/profile-setup");
+    navigate("/judge/profile-setup"); // Update the route to "/judge/profile-setup"
   };
 
   const handleViewProjectsClick = () => {
-    navigate("/view-projects");
+    navigate("/judge/view-projects"); // Update the route to "/judge/view-projects"
   };
 
   const handleGradeProjectsClick = () => {
-    navigate("/grade-projects");
+    navigate("/judge/grade-projects"); // Update the route to "/judge/grade-projects"
   };
 
   return (
