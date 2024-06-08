@@ -141,54 +141,55 @@ const ManageJudges = observer(() => {
         const [selectedJudges, setSelectedJudges] = React.useState([]);
     
         React.useEffect(() => {
-            localStorage.setItem('selectedJudges', JSON.stringify(selectedJudges));
+          localStorage.setItem('selectedJudges', JSON.stringify(selectedJudges));
         }, [selectedJudges]);
     
         const toggleSelection = (id) => {
-            setSelectedJudges((prevSelectedJudges) => {
-                if (prevSelectedJudges.includes(id)) {
-                    return prevSelectedJudges.filter((judgeId) => judgeId !== id);
-                } else {
-                    return [...prevSelectedJudges, id];
-                }
-            });
+          setSelectedJudges((prevSelectedJudges) => {
+            if (prevSelectedJudges.includes(id)) {
+              return prevSelectedJudges.filter((judgeId) => judgeId !== id);
+            } else {
+              return [...prevSelectedJudges, id];
+            }
+          });
         };
     
         return (
-            <div>
-                <input
-                    type="text"
-                    id="filterInput"
-                    placeholder="Filter by name or ID"
-                    onChange={(e) => setFilterText(e.target.value)}
-                />
-                <ul id="judgesList" style={{ listStyleType: 'none', padding: 0 }}>
-                    {judges
-                        .filter(
-                            (judge) =>
-                                judge.name.toLowerCase().includes(filterText.toLowerCase()) ||
-                                judge.ID.toString().includes(filterText)
-                        )
-                        .map((judge, index) => (
-                            <li key={judge.ID} style={{ marginBottom: '10px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc', padding: '10px' }}>
-                                    <label htmlFor={`judge-${index}`} style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0 }}>
-                                        {judge.name} (ID: {judge.ID})
-                                    </label>
-                                    <input
-                                        type="checkbox"
-                                        id={`judge-${index}`}
-                                        checked={selectedJudges.includes(judge.ID.toString())}
-                                        onChange={() => toggleSelection(judge.ID.toString())}
-                                        style={{ marginLeft: '10px' }}
-                                    />
-                                </div>
-                            </li>
-                        ))}
-                </ul>
-            </div>
+          <div>
+            <input
+              type="text"
+              id="filterInput"
+              placeholder="Filter by name or ID"
+              onChange={(e) => setFilterText(e.target.value)}
+            />
+            <ul id="judgesList" style={{ listStyleType: 'none', padding: 0 }}>
+              {judges
+                .filter(
+                  (judge) =>
+                    judge.name.toLowerCase().includes(filterText.toLowerCase()) ||
+                    judge.ID.toString().includes(filterText)
+                )
+                .map((judge, index) => (
+                  <li key={judge.ID} style={{ marginBottom: '10px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderRadius: '6px', border: '1px solid #ccc', padding: '10px' }}>
+                      <label htmlFor={`judge-${index}`} style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0 }}>
+                        {judge.name} (ID: {judge.ID})
+                      </label>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', minWidth: '45px' }}>
+                        <input
+                          type="checkbox"
+                          id={`judge-${index}`}
+                          checked={selectedJudges.includes(judge.ID.toString())}
+                          onChange={() => toggleSelection(judge.ID.toString())}
+                        />
+                      </div>
+                    </div>
+                  </li>
+                ))}
+            </ul>
+          </div>
         );
-    };
+      };
     
     
     useEffect(() => {
@@ -332,21 +333,21 @@ const ManageJudges = observer(() => {
 
     return (
         <div>
-            <h1>Manage Judges</h1>
-            <div>
-                <h2>Upload Potential Judges CSV</h2>
-                <input type="file" onChange={handleFileUpload} accept=".csv" />
-            </div>
-            <div>
-                <h2>Judges List</h2>
-                <button onClick={openJudgesListModal}>Show Judges List</button>
-            </div>
-            <div>
-                <h2>Potential Judges List</h2>
-                <button onClick={openPotentialJudgesListModal}>Show Potential Judges List</button>
-            </div>
+          <h1>Manage Judges</h1>
+          <div>
+            <h2>Upload Potential Judges CSV</h2>
+            <input type="file" onChange={handleFileUpload} accept=".csv" />
+          </div>
+          <div>
+            <h2>Judges List</h2>
+            <button onClick={openJudgesListModal}>Show Judges List</button>
+          </div>
+          <div>
+            <h2>Potential Judges List</h2>
+            <button onClick={openPotentialJudgesListModal}>Show Potential Judges List</button>
+          </div>
         </div>
-    );
-});
+      );
+    });
 
 export default ManageJudges;
