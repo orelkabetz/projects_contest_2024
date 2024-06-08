@@ -1,3 +1,4 @@
+const potentialUserDB = require("../../DB/entities/potential_users.entity");
 const UserDB = require("../../DB/entities/user.entity")
 const jwt = require('jsonwebtoken');
 
@@ -102,28 +103,59 @@ class UsersSerivce {
   checkIfUserExist = async (userID) => {
    
   }
+  async checkIfUserExistInPotentialUsers(userID) {
+    try {
+      const user = await potentialUserDB.findOne({ ID: userID }).lean();
+      return user ? true : false;
+    } catch (error) {
+      console.error('Error checking user existence in potential users:', error);
+      throw error;
+    }
+  }
   
   async registerNewUserWithFullDetails(userID, fullName, email, type, password) {
     try {
+      // Check if the user ID exists in the potential_users collection
+      const userExistsInPotentialUsers = await this.checkIfUserExistInPotentialUsers(userID);
+      if (!userExistsInPotentialUsers) {
+        console.log('User ID does not exist in potential users. Registration not allowed.');
+        return { success: false, error: 'User ID not found in potential users' };
+      }
+
+      // Check if the user ID already exists in the users collection
+      const userExists = await this.checkIfUserExist(userID);
+      if (userExists) {
+        console.log('User ID already exists. Registration not allowed.');
+        return { success: false, error: 'User ID already exists' };
+      }
+
       // Creating a new user instance
       const newUser = new UserDB({
-          ID: userID,  
-          name: fullName,
-          email: email,
-          password: password, 
-          type: type,
+        ID: userID,
+        name: fullName,
+        email: email,
+        password: password,
+        type: type,
       });
-  
+
       // Saving the new user to the database
       await newUser.save();
       console.log('User added successfully!');
-      return {success: true}
-  } catch (error) {
+      return { success: true };
+    } catch (error) {
       console.error('Error adding user:', error);
-      return {success: false}
+      return { success: false };
+    }
   }
+  async checkIfUserExist(userID) {
+    try {
+      const user = await UserDB.findOne({ ID: userID }).lean();
+      return user ? true : false;
+    } catch (error) {
+      console.error('Error checking user existence:', error);
+      throw error;
+    }
   }
-  
 
   
 }

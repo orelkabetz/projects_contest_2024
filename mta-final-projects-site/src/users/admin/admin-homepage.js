@@ -23,6 +23,8 @@ const AdminHome = observer(() => {
                 <button onClick={() => handleButtonClick('/admin/export-data')}>
                     Export Data to CSV
                 </button>
+                <button onClick={() => navigate('/admin')}>Back to Admin Homepage</button>
+
             </div>
         </div>
     );
