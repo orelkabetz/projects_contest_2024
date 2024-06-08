@@ -66,7 +66,7 @@ const Login = observer(() => {
 
 
   return (
-    <div className="login-container">
+    <div className="login-container" style={{ marginTop: "5px", textAlign: "center" }}>
       <img src="/Assets/Logos/MTA_Logo_Black.svg" alt="Logo" className="logo_Mta_Black" />
       <div className="login-box">
         <form onSubmit={handleLogin}>

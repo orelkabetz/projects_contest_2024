@@ -76,7 +76,7 @@ const App = observer(() => {
       <Router>
       <div className="app-container">
         <h1>MTA Final Projects</h1>
-        <div style={{background: "red"}} onClick={() => userStore.logout()}>Test logout</div>
+        <div style={{ background: "red", display: "inline-block", padding: "5px", cursor: "pointer" }} onClick={() => userStore.logout()}><span style={{ margin: "10px" }}>Test logout</span></div>
         <Routes>
           <Route path="/" element={<AuthLayout/>} >
             <Route index element={<Login />} />
