@@ -59,6 +59,23 @@ getCollections()
       }
   });
 
+
+  router.get('/projects/projectsList', async (req, res) => {
+    try {
+      const projects = await collections.project_schemas.find({}, { 
+        projection: { name: 1, Title: 1, WorkshopName: 1, WorkshopId: 1, ProjectOwners: 1, Lecturer: 1,
+          StudentName: 1, StudentEmail: 1, StudentPhone:1} }).toArray();
+      res.json(projects);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      res.status(500).json({ error: 'An error occurred while fetching projcets' });
+    }
+  });
+    
+  })
+  .catch((err) => {
+    console.error('Error getting collections:', err);
+  });
     // Add a new route for adding a preference
     router.post('/preferences/add', async (req, res) => {
       const { preference } = req.body;
@@ -71,10 +88,5 @@ getCollections()
         res.status(500).json({ error: 'An error occurred while adding the preference' });
       }
     });
-    
-  })
-  .catch((err) => {
-    console.error('Error getting collections:', err);
-  });
 
 module.exports = router;
