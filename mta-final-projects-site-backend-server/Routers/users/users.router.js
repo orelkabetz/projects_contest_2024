@@ -76,7 +76,55 @@ router.post('/check-token', async (req, res) => {
     res.status(500).json({ success: false, error: 'Server error' });
   }
 });
+router.get('/preferences/user', async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    const user = await usersSerivce.checkToken(token);
 
+    if (!user) {
+      return res.status(401).json({ success: false, error: 'Invalid token' });
+    }
+
+    const userPreferences = await usersSerivce.getUserPreferences(user.id);
+    res.json(userPreferences);
+  } catch (error) {
+    console.error('Error fetching user preferences:', error);
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
+});
+
+router.get('/preferences', async (req, res) => {
+  try {
+    const preferences = await usersSerivce.getPreferences();
+    res.json(preferences);
+  } catch (error) {
+    console.error('Error fetching preferences:', error);
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
+});
+
+router.post('/preferences/save', async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    const user = await usersSerivce.checkToken(token);
+
+    if (!user) {
+      return res.status(401).json({ success: false, error: 'Invalid token' });
+    }
+
+    const { preferences } = req.body;
+    const result = await usersSerivce.savePreferences(user.id, preferences);
+
+    if (result.success) {
+      res.json({ success: true, message: 'Preferences saved successfully' });
+    } else {
+      res.json({ success: false, error: result.error });
+    }
+  } catch (error) {
+    console.error('Error saving preferences:', error);
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
+});
 
 
 

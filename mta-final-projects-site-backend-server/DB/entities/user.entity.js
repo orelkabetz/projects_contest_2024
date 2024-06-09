@@ -7,9 +7,9 @@ const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true },
-    type: { type: String, required: true, default:"judge" },
-} ,{timestamps: true});
-
+    type: { type: String, required: true, default: "judge" },
+    selected_preferences: [{ type: String }], 
+}, { timestamps: true });
 
 // Model creation
 const UserDB = mongoose.model('user', userSchema);
