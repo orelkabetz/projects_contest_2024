@@ -13,6 +13,7 @@
     padding: 20px;
     width: 50%;
     position: relative; /* Position arrows relative to the card */
+    background-color: #ffffff; /* Change background to bright white */
 }
 
 /* Custom styles for carousel arrows */
