@@ -1,11 +1,9 @@
 import { observer } from 'mobx-react-lite';
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import CustomCarousel from './Carousel'; // Import Carousel component
-import React, { useState } from 'react';
 import BackButton from '../../BackButton';
 
 const ManageProjects = observer(() => {

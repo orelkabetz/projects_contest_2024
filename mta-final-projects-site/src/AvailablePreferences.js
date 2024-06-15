@@ -80,8 +80,10 @@ const AvailablePreferences = observer(({ token }) => {
     const toggleSelection = (id) => {
       setLocalSelectedPreferences((prevSelectedPreferences) => {
         if (prevSelectedPreferences.includes(id)) {
+          handlePreferenceChange(id, false); // false indicates removal
           return prevSelectedPreferences.filter((preferenceId) => preferenceId !== id);
         } else {
+          handlePreferenceChange(id, true); // true indicates addition
           return [...prevSelectedPreferences, id];
         }
       });
@@ -145,6 +147,24 @@ const AvailablePreferences = observer(({ token }) => {
     );
   };
 
+  const handlePreferenceChange = async (preferenceId, isAdding) => {
+    try {
+      const url = isAdding ? 'http://localhost:3001/preferences/add' : 'http://localhost:3001/preferences/remove';
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ preferenceId }),
+      });
+      const data = await response.json();
+      console.log('Success:', data);
+    } catch (error) {
+      console.error('Error handling preference change:', error);
+    }
+  };
+
   const saveSelectedPreferences = async (selectedPreferences) => {
     try {
       const response = await fetch('http://localhost:3001/preferences/save', {
@@ -166,7 +186,6 @@ const AvailablePreferences = observer(({ token }) => {
   return (
     <div>
       <button onClick={openPreferencesModal}>Edit Preferences</button>
-      
     </div>
   );
 });
