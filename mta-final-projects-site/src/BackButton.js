@@ -17,7 +17,7 @@ const BackButton = ({ route }) => {
       showCancelButton: true,
       confirmButtonText: 'Yes',
       cancelButtonText: 'No',
-      reverseButtons: true,
+      reverseButtons: false, // Change this to false
       customClass: {
         confirmButton: 'swal-button-confirm',
         cancelButton: 'swal-button-cancel',
