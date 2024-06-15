@@ -1,20 +1,20 @@
 const potentialUserDB = require("../../DB/entities/potential_users.entity");
-const UserDB = require("../../DB/entities/user.entity")
+const UserDB = require("../../DB/entities/user.entity");
 const jwt = require('jsonwebtoken');
 const availablePreferencesDB = require("../../DB/entities/available_preferences.entity");
 
-const pathSqurity = {
+const pathSecurity = {
   "/add-id": "admin",
   "/add-points": "judge"
-}
+};
 
-const secretKey='SuperKey123'
+const secretKey = 'SuperKey123';
 
-const FAILED_RESOULT = {
+const FAILED_RESULT = {
   success: false,
-}
+};
 
-class UsersSerivce {
+class UsersService {
   checkLoginDetails = async (userID, password) => {
     try {
       const user = await UserDB.findOne({ ID: userID, password: password }).lean();
@@ -22,7 +22,7 @@ class UsersSerivce {
         return {
           success: false,
           error: "User not found"
-        }
+        };
       }
       const token = jwt.sign({ data: {
         id: user.ID,
@@ -42,58 +42,54 @@ class UsersSerivce {
       console.log(error);
       return {
         success: false,
-        error: "Unknown error server - login"
-      }
+        error: "Unknown server error - login"
+      };
     }
   }
 
   async checkToken(token) {
     if (!token) {
-      console.error("No Token")
+      console.error("No Token");
       return;
     }
-    const user = jwt.verify(token, secretKey)
+    const user = jwt.verify(token, secretKey);
     if (!user) {
-      console.error("No valid token")
+      console.error("Invalid token");
       return;
     }
-    return user.data
+    return user.data;
   }
 
   auth(token) {
     const decoded = jwt.verify(token, secretKey);
-    return decoded.user
+    return decoded.user;
   }
 
   validateType(path, user) {
-    const requiredPerrmisionType = pathSqurity[path];
+    const requiredPermissionType = pathSecurity[path];
     const userType = user.type;
-    if (!requiredPerrmisionType) {
-      return false
+    if (!requiredPermissionType) {
+      return false;
     } else {
-      if (requiredPerrmisionType === userType) {
-        return true
-      } else {
-        return false
-      }
+      return requiredPermissionType === userType;
     }
   }
 
-  addId(path,token, ID) {
+  addId(path, token, ID) {
     const user = this.auth(token);
-    const isValid = this.validateType(path, user)
+    const isValid = this.validateType(path, user);
     if (!isValid) {
       return {
         success: false,
-        error: "unauthorised"
-      }
+        error: "unauthorized"
+      };
     }
   }
 
-  async checkIfUserExistInPotentialUsers(userID) {
+  async checkIfUserExistsInPotentialUsers(userID) {
     try {
       const user = await potentialUserDB.findOne({ ID: userID }).lean();
-      return user ? true : false;
+      return !!user;
     } catch (error) {
       console.error('Error checking user existence in potential users:', error);
       throw error;
@@ -102,21 +98,18 @@ class UsersSerivce {
   
   async registerNewUserWithFullDetails(userID, fullName, email, type, password) {
     try {
-      // Check if the user ID exists in the potential_users collection
-      const userExistsInPotentialUsers = await this.checkIfUserExistInPotentialUsers(userID);
+      const userExistsInPotentialUsers = await this.checkIfUserExistsInPotentialUsers(userID);
       if (!userExistsInPotentialUsers) {
         console.log('User ID does not exist in potential users. Registration not allowed.');
         return { success: false, error: 'User ID not found in potential users' };
       }
 
-      // Check if the user ID already exists in the users collection
-      const userExists = await this.checkIfUserExist(userID);
+      const userExists = await this.checkIfUserExists(userID);
       if (userExists) {
         console.log('User ID already exists. Registration not allowed.');
         return { success: false, error: 'User ID already exists' };
       }
 
-      // Creating a new user instance
       const newUser = new UserDB({
         ID: userID,
         name: fullName,
@@ -125,7 +118,6 @@ class UsersSerivce {
         type: type,
       });
 
-      // Saving the new user to the database
       await newUser.save();
       console.log('User added successfully!');
       return { success: true };
@@ -134,10 +126,11 @@ class UsersSerivce {
       return { success: false };
     }
   }
-  async checkIfUserExist(userID) {
+
+  async checkIfUserExists(userID) {
     try {
       const user = await UserDB.findOne({ ID: userID }).lean();
-      return user ? true : false;
+      return !!user;
     } catch (error) {
       console.error('Error checking user existence:', error);
       throw error;
@@ -168,6 +161,7 @@ class UsersSerivce {
       return { success: false, error: 'Failed to save preferences' };
     }
   }
+
   async getUserPreferences(userID) {
     try {
       const user = await UserDB.findOne({ ID: userID });
@@ -180,11 +174,40 @@ class UsersSerivce {
       throw error;
     }
   }
-  
-}
-/**
- * this class will run all the users functions
- */
-const usersSerivce = new UsersSerivce()
 
-module.exports = {usersSerivce}
+  async addPreference(userID, preferenceId) {
+    try {
+      const user = await UserDB.findOne({ ID: userID });
+      if (!user) {
+        return { success: false, error: 'User not found' };
+      }
+      if (!user.selected_preferences.includes(preferenceId)) {
+        user.selected_preferences.push(preferenceId);
+        await user.save();
+      }
+      return { success: true };
+    } catch (error) {
+      console.error('Error adding preference:', error);
+      return { success: false, error: 'Failed to add preference' };
+    }
+  }
+
+  async removePreference(userID, preferenceId) {
+    try {
+      const user = await UserDB.findOne({ ID: userID });
+      if (!user) {
+        return { success: false, error: 'User not found' };
+      }
+      user.selected_preferences = user.selected_preferences.filter(id => id !== preferenceId);
+      await user.save();
+      return { success: true };
+    } catch (error) {
+      console.error('Error removing preference:', error);
+      return { success: false, error: 'Failed to remove preference' };
+    }
+  }
+}
+
+const usersSerivce = new UsersService();
+
+module.exports = { usersSerivce };
