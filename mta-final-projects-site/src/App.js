@@ -2,7 +2,8 @@ import React, { useCallback, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useNavigate } from 'react-router-dom';
 import Login from './Login';
 import Register from './Register';
-import JudgeHome from './users/judge/JudgeHome';
+import LogoutButton from './LogoutButton'; 
+import JudgeHome from './users/judge/JudgeHome'; // Add this import
 import ProfileSetup from './users/judge/ProfileSetup';
 import ViewProjects from './users/judge/ViewProjects';
 import GradeProjects from './users/judge/GradeProjects';
@@ -68,40 +69,30 @@ const App = observer(() => {
   return (
     <StoreProvider>
       <Router>
-        <div className="app-container">
-          <h1>MTA Final Projects</h1>
-          <div
-            style={{
-              background: 'red',
-              display: 'inline-block',
-              padding: '5px',
-              cursor: 'pointer',
-            }}
-            onClick={() => userStore.logout()}
-          >
-            <span style={{ margin: '10px' }}>Test logout</span>
-          </div>
-          <Routes>
-            <Route path="/" element={<AuthLayout />}>
-              <Route index element={<Login />} />
-              <Route path="/register" element={<Register />} />
-            </Route>
-            <Route path="/judge" element={<JudgeLayout />}>
-              <Route index element={<JudgeHome />} />
-              <Route path="profile-setup" element={<ProfileSetup />} />
-              <Route path="view-projects" element={<ViewProjects />} />
-              <Route path="grade-projects" element={<GradeProjects />} />
-            </Route>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminHome />} />
-              <Route path="manage-judges" element={<ManageJudges />} />
-              <Route path="manage-projects" element={<ManageProjects />} />
-              <Route path="assign-projects" element={<AssignProjects />} />
-              <Route path="export-data" element={<ExportData />} />
-            </Route>
-          </Routes>
-        </div>
-      </Router>
+      <div className="app-container">
+        <h1>MTA Final Projects</h1>
+        <LogoutButton userStore={userStore} />
+        <Routes>
+          <Route path="/" element={<AuthLayout/>} >
+            <Route index element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Route>
+          <Route path={"/judge"} element={<JudgeLayout/>}>
+            <Route index element={<JudgeHome />} /> // Update this route 
+            <Route path="profile-setup" element={<ProfileSetup />} /> // Update this route 
+            <Route path="view-projects" element={<ViewProjects />} /> // Update this route 
+            <Route path="grade-projects" element={<GradeProjects />} /> // Update this route          
+          </Route>
+          <Route path="/admin" element={<AdminLayout/>} >
+            <Route index element={<AdminHome/>} />
+            <Route path="manage-judges" element={<ManageJudges />} />
+            <Route path="manage-projects" element={<ManageProjects />} />
+            <Route path="assign-projects" element={<AssignProjects />} />
+            <Route path="export-data" element={<ExportData />} />
+          </Route>
+        </Routes>
+      </div>
+    </Router>
     </StoreProvider>
   );
 });
