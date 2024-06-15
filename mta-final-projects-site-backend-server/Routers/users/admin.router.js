@@ -70,7 +70,7 @@ getCollections()
                 [searchField]: { $regex: search, $options: 'i' }
             };
         } else if (search) {
-            // Fallback to the existing logic if only search term is provided without a specific field
+            // Fallback to the existing logic if only search term is provided without a specific fieldש
             query = {
                 $or: [
                     { name: { $regex: search, $options: 'i' } },
@@ -100,13 +100,12 @@ getCollections()
         }).toArray();
         res.json(projects);
     } catch (error) {
-      console.error('Error fetching preferences:', error);
-      res.status(500).json({ error: 'An error occurred while fetching preferences' });
+        console.error('Error fetching projects:', error);
+        res.status(500).json({ error: 'An error occurred while fetching projects' });
     }
   });
-// Route to get all 
+// Route to get all preferences
 
-  preferences
 router.get('/preferences', async (req, res) => {
   try {
     const preferences = await collections.available_preferences.find({}).toArray();

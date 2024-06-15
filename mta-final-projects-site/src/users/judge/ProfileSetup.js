@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import AvailablePreferences from '../../AvailablePreferences';
+import AvailablePreferences from './AvailablePreferences';
 import { useStore } from '../../stores';
 import BackButton from '../../BackButton';
 
