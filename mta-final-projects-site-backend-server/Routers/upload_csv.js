@@ -29,15 +29,33 @@ router.post('/potential_users', upload.single('file'), (req, res) => {
 });
 
 router.post('/projects', upload.single('file'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+
     const results = [];
-  
-    fs.createReadStream(req.file.path)
+    const filePath = req.file.path;
+
+    console.log('Started uploading');
+
+    fs.createReadStream(filePath, { encoding: 'utf8' })
         .pipe(csv())
         .on('data', (data) => results.push(data))
+        .on('error', (error) => {
+            console.error('Error while parsing CSV:', error);
+            fs.unlinkSync(filePath); // Clean up the temp file
+            res.status(500).json({ error: 'Error while parsing CSV' });
+        })
         .on('end', () => {
-            projectsDB.insertMany(results, {ordered: false})
-                .then(dbRes => res.status(201).json(dbRes))
-                .catch(err => res.status(400).json({ error: err.message }));
+            projectsDB.insertMany(results, { ordered: false })
+                .then(dbRes => {
+                    fs.unlinkSync(filePath); // Clean up the temp file
+                    res.status(201).json(dbRes);
+                })
+                .catch(err => {
+                    fs.unlinkSync(filePath); // Clean up the temp file
+                    res.status(400).json({ error: err.message });
+                });
         });
 });
 
