@@ -54,12 +54,7 @@ const AvailablePreferences = observer(({ token }) => {
     MySwal.fire({
       title: 'Available Preferences',
       html: '<div id="preferencesListContainer"></div>',
-      showCancelButton: true,
-      confirmButtonText: 'Save Preferences',
-      cancelButtonText: 'Close',
-      preConfirm: () => {
-        saveSelectedPreferences(selectedPreferences);
-      },
+      confirmButtonText: 'OK',
       didOpen: () => {
         renderPreferencesList();
       },
@@ -75,7 +70,11 @@ const AvailablePreferences = observer(({ token }) => {
   };
 
   const PreferencesList = ({ selectedPreferences }) => {
-    const [localSelectedPreferences, setLocalSelectedPreferences] = React.useState(selectedPreferences);
+    const [localSelectedPreferences, setLocalSelectedPreferences] = useState(selectedPreferences);
+
+    useEffect(() => {
+      setSelectedPreferences(localSelectedPreferences);
+    }, [localSelectedPreferences]);
 
     const toggleSelection = (id) => {
       setLocalSelectedPreferences((prevSelectedPreferences) => {
@@ -88,14 +87,6 @@ const AvailablePreferences = observer(({ token }) => {
         }
       });
     };
-
-    useEffect(() => {
-      setSelectedPreferences(localSelectedPreferences);
-    }, [localSelectedPreferences]);
-
-    if (!Array.isArray(preferences)) {
-      return <div>Preferences data is not available.</div>;
-    }
 
     return (
       <div>
@@ -162,24 +153,6 @@ const AvailablePreferences = observer(({ token }) => {
       console.log('Success:', data);
     } catch (error) {
       console.error('Error handling preference change:', error);
-    }
-  };
-
-  const saveSelectedPreferences = async (selectedPreferences) => {
-    try {
-      const response = await fetch('http://localhost:3001/preferences/save', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ preferences: selectedPreferences }),
-      });
-      const data = await response.json();
-      console.log('Success:', data);
-      setSelectedPreferences(selectedPreferences);
-    } catch (error) {
-      console.error('Error saving preferences:', error);
     }
   };
 

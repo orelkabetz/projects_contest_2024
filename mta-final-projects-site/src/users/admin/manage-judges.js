@@ -5,8 +5,6 @@ import withReactContent from 'sweetalert2-react-content';
 import ReactDOM from 'react-dom/client';
 import BackButton from '../../BackButton';
 
-
-
 const MySwal = withReactContent(Swal);
 
 const ManageJudges = observer(() => {
@@ -87,9 +85,7 @@ const ManageJudges = observer(() => {
 
     // Function to remove selected users from the database
     const removeSelectedUsers = (selectedJudges) => {
-
         const userIds = selectedJudges;
-
         fetch('http://localhost:3001/admin/judges/remove-users', {
             method: 'POST',
             headers: {
@@ -193,7 +189,6 @@ const ManageJudges = observer(() => {
         );
       };
     
-    
     useEffect(() => {
         renderJudgesList();
     }, [selectedJudges, filterText]);
@@ -294,7 +289,7 @@ const ManageJudges = observer(() => {
         );
     };
     
-    React.useEffect(() => {
+    useEffect(() => {
         renderPotentialJudgesList();
     }, [selectedIds, filterText]);
     
@@ -332,66 +327,163 @@ const ManageJudges = observer(() => {
                 console.error('Error:', error);
             });
     };
+
     const addNewPreference = async () => {
         const { value: newPreference } = await MySwal.fire({
-          title: 'Add New Preference',
-          input: 'text',
-          inputLabel: 'Preference Name',
-          inputPlaceholder: 'Enter the new preference',
-          showCancelButton: true,
-          confirmButtonText: 'Save',
-          cancelButtonText: 'Cancel',
-          inputValidator: (value) => {
-            if (!value) {
-              return 'Please enter a preference name';
-            }
-          },
+            title: 'Add New Preference',
+            input: 'text',
+            inputLabel: 'Preference Name',
+            inputPlaceholder: 'Enter the new preference',
+            showCancelButton: true,
+            confirmButtonText: 'Save',
+            cancelButtonText: 'Cancel',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Please enter a preference name';
+                }
+            },
         });
-    
-        if (newPreference) {
-          try {
-            const response = await fetch('http://localhost:3001/admin/preferences/add', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ preference: newPreference }),
-            });
-    
-            if (response.ok) {
-              MySwal.fire('Success', 'Preference added successfully!', 'success');
-            } else {
-              MySwal.fire('Error', 'Failed to add preference', 'error');
-            }
-          } catch (error) {
-            console.error('Error:', error);
-            MySwal.fire('Error', 'An error occurred while adding the preference', 'error');
-          }
-        }
-      };
 
-      return (
+        if (newPreference) {
+            try {
+                const response = await fetch('http://localhost:3001/admin/preferences/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ preference: newPreference }),
+                });
+
+                if (response.ok) {
+                    MySwal.fire('Success', 'Preference added successfully!', 'success');
+                } else {
+                    MySwal.fire('Error', 'Failed to add preference', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                MySwal.fire('Error', 'An error occurred while adding the preference', 'error');
+            }
+        }
+    };
+
+    const removePreferences = async () => {
+        try {
+            const response = await fetch('http://localhost:3001/admin/preferences');
+            const preferences = await response.json();
+
+            MySwal.fire({
+                title: 'Remove Preferences',
+                html: '<div id="preferencesListContainer"></div>',
+                showCancelButton: true,
+                confirmButtonText: 'Remove Selected Preferences',
+                cancelButtonText: 'Close',
+                preConfirm: () => {
+                    const selectedPreferences = JSON.parse(localStorage.getItem('selectedPreferences')) || [];
+                    removeSelectedPreferences(selectedPreferences);
+                },
+                didOpen: () => {
+                    renderPreferencesList(preferences);
+                },
+            });
+        } catch (error) {
+            console.error('Error fetching preferences:', error);
+            MySwal.fire('Error', 'An error occurred while fetching the preferences', 'error');
+        }
+    };
+
+    const renderPreferencesList = (preferences) => {
+        const preferencesListContainer = document.getElementById('preferencesListContainer');
+        if (preferencesListContainer) {
+            const root = ReactDOM.createRoot(preferencesListContainer);
+            root.render(<PreferencesList preferences={preferences} />);
+        }
+    };
+
+    const PreferencesList = ({ preferences }) => {
+        const [selectedPreferences, setSelectedPreferences] = React.useState([]);
+
+        React.useEffect(() => {
+            localStorage.setItem('selectedPreferences', JSON.stringify(selectedPreferences));
+        }, [selectedPreferences]);
+
+        const toggleSelection = (id) => {
+            setSelectedPreferences((prevSelectedPreferences) => {
+                if (prevSelectedPreferences.includes(id)) {
+                    return prevSelectedPreferences.filter((preferenceId) => preferenceId !== id);
+                } else {
+                    return [...prevSelectedPreferences, id];
+                }
+            });
+        };
+
+        return (
+            <div>
+                <ul id="preferencesList" style={{ listStyleType: 'none', padding: 0 }}>
+                    {preferences.map((preference, index) => (
+                        <li key={preference.ID} style={{ marginBottom: '10px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc', padding: '10px' }}>
+                                <label htmlFor={`preference-${index}`} style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0 }}>
+                                    {preference.ID}
+                                </label>
+                                <input
+                                    type="checkbox"
+                                    id={`preference-${index}`}
+                                    checked={selectedPreferences.includes(preference.ID)}
+                                    onChange={() => toggleSelection(preference.ID)}
+                                    style={{ marginLeft: '10px' }}
+                                />
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        );
+    };
+
+    const removeSelectedPreferences = async (selectedPreferences) => {
+        try {
+            const response = await fetch('http://localhost:3001/admin/preferences/remove', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ preferences: selectedPreferences }),
+            });
+
+            if (response.ok) {
+                MySwal.fire('Success', 'Preferences removed successfully!', 'success');
+            } else {
+                MySwal.fire('Error', 'Failed to remove preferences', 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            MySwal.fire('Error', 'An error occurred while removing the preferences', 'error');
+        }
+    };
+
+    return (
         <div>
-          <h1>Manage Judges</h1>
-          <div>
-            <BackButton route="/admin" />
-            <h2>Upload Potential Judges CSV</h2>
-            <input type="file" onChange={handleFileUpload} accept=".csv" />
-          </div>
-          <div>
-            <h2>Judges List</h2>
-            <button onClick={openJudgesListModal}>Show Judges List</button>
-          </div>
-          <div>
-            <h2>Potential Judges List</h2>
-            <button onClick={openPotentialJudgesListModal}>Show Potential Judges List</button>
-          </div>
-          <div>
-            <h2>Preference Subjects Options</h2>
-            <button onClick={addNewPreference}>Add Preference</button>
-          </div>
+            <h1>Manage Judges</h1>
+            <div>
+                <BackButton route="/admin" />
+                <h2>Upload Potential Judges CSV</h2>
+                <input type="file" onChange={handleFileUpload} accept=".csv" />
+            </div>
+            <div>
+                <h2>Judges List</h2>
+                <button onClick={openJudgesListModal}>Show Judges List</button>
+            </div>
+            <div>
+                <h2>Potential Judges List</h2>
+                <button onClick={openPotentialJudgesListModal}>Show Potential Judges List</button>
+            </div>
+            <div>
+                <h2>Preference Subjects Options</h2>
+                <button onClick={addNewPreference} style={{ marginRight: '10px' }}>Add Preference</button>
+                <button onClick={removePreferences}>Remove Preference</button>
+            </div>
         </div>
-      );
-    });
+    );
+});
 
 export default ManageJudges;
