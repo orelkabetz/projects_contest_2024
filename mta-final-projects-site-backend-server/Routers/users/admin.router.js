@@ -71,7 +71,7 @@ getCollections()
                 [searchField]: { $regex: search, $options: 'i' }
             };
         } else if (search) {
-            // Fallback to the existing logic if only search term is provided without a specific field
+            // Fallback to the existing logic if only search term is provided without a specific fieldש
             query = {
                 $or: [
                     { name: { $regex: search, $options: 'i' } },
