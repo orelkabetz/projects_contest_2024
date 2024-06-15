@@ -2,6 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useNavigate } from 'react-router-dom';
 import Login from './Login';
 import Register from './Register';
+import LogoutButton from './LogoutButton'; 
 // import AdminHome from './admin-homepage'; // Add this import
 import JudgeHome from './users/judge/JudgeHome'; // Add this import
 import ProfileSetup from './users/judge/ProfileSetup';
@@ -76,7 +77,7 @@ const App = observer(() => {
       <Router>
       <div className="app-container">
         <h1>MTA Final Projects</h1>
-        <div style={{ background: "red", display: "inline-block", padding: "5px", cursor: "pointer" }} onClick={() => userStore.logout()}><span style={{ margin: "10px" }}>Test logout</span></div>
+        <LogoutButton userStore={userStore} />
         <Routes>
           <Route path="/" element={<AuthLayout/>} >
             <Route index element={<Login />} />
