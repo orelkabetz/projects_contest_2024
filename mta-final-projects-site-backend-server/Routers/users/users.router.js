@@ -1,6 +1,5 @@
 const express = require('express');
 const { usersSerivce } = require('./users.service');
-const { fetchJudges } = require('../../DB/index');
 const router = express.Router();
 
 router.post('/login', async (req, res) => {
