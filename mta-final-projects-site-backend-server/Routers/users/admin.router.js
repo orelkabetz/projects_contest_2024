@@ -59,6 +59,7 @@ getCollections()
       }
   });
 
+
   router.get('/projects/projectsList', async (req, res) => {
     try {
         const { search, searchField } = req.query;
@@ -108,7 +109,17 @@ getCollections()
   .catch((err) => {
     console.error('Error getting collections:', err);
   });
-
-  
+    // Add a new route for adding a preference
+    router.post('/preferences/add', async (req, res) => {
+      const { preference } = req.body;
+      try {
+        const result = await collections.available_preferences.insertOne({ ID: preference });
+        res.json(result);
+      } catch (error) {
+        console.log('aaaaalllll')
+        console.error('Error adding preference:', error);
+        res.status(500).json({ error: 'An error occurred while adding the preference' });
+      }
+    });
 
 module.exports = router;
