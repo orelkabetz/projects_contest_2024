@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // Import Link for navigation
 import './Login.css';
-import userStorage from './stores/UserStore';
+import userStorage from './stores/UserStorage';
 import { observer } from 'mobx-react-lite';
 import { storages } from './stores';
 

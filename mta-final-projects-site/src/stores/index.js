@@ -1,4 +1,4 @@
-import userStorage from './UserStore';
+import userStorage from './UserStorage';
 import appStorage from './AppStorage';
 
 export const storages = {
