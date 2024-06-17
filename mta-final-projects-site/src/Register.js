@@ -9,7 +9,7 @@ const Register = observer(() => {
   const [fullName, setFullName] = useState(''); // State for full name
   const [email, setEmail] = useState(''); // State for email
   const [password, setPassword] = useState('');
-  console.log(userID);
+
   const handleRegister = (e) => {
     e.preventDefault();
     console.log('Registering:', userID, fullName, email, password);
