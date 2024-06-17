@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 import ReactDOM from 'react-dom/client';
 
-const MySwal = withReactContent(Swal);
 
 const AvailablePreferences = observer(({ token }) => {
   const [preferences, setPreferences] = useState([]);
@@ -51,7 +49,7 @@ const AvailablePreferences = observer(({ token }) => {
     await fetchPreferences();
     await fetchUserPreferences();
 
-    MySwal.fire({
+    Swal.fire({
       title: 'Available Preferences',
       html: '<div id="preferencesListContainer"></div>',
       confirmButtonText: 'OK',

@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import ProjectList from '../../ProjectsList'; // Ensure the correct path to ProjectList component
-import { useStore } from '../../stores'; // Ensure the correct path to the stores
+import { storages } from '../../stores'; // Ensure the correct path to the stores
 import BackButton from '../../BackButton';
 
 const ViewProjects = observer(() => {
-    const { userStore } = useStore();
-    const user = userStore.user;
+    const { userStorage } = storages;
+    const user = userStorage.user;
 
     if (!user) {
         // Handle the case when the user object is null

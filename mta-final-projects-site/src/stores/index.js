@@ -1,23 +1,7 @@
-import { createContext, useContext } from 'react';
-import userStore from './UserStore';
-import appStore from './AppStore';
-import { observer } from 'mobx-react-lite';
+import userStorage from './UserStore';
+import appStorage from './AppStorage';
 
-const store = {
-  userStore,
-  appStore
+export const storages = {
+  userStorage,
+  appStorage
 };
-
-const StoreContext = createContext(store);
-
-
-export const StoreProvider = observer(({ children }) => {
-  return (
-    <StoreContext.Provider value={store}>
-      {children}
-    </StoreContext.Provider>
-  );
-});
-
-export const useStore = () => useContext(StoreContext);
-export default store;

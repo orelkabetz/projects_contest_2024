@@ -21,7 +21,7 @@ router.post('/login', async (req, res) => {
 router.post('/add-id', async (req, res) => {
   try {
     const { token, ID } = req.body;
-    const userRes = await usersSerivce.addId("/add-id", token, ID);
+    const userRes = usersSerivce.addId("/add-id", token, ID);
 
     // More sophisticated logic can be added here to handle login
     res.json(userRes);

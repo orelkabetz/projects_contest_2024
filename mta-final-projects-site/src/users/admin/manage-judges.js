@@ -1,11 +1,9 @@
 import { observer } from 'mobx-react-lite';
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 import ReactDOM from 'react-dom/client';
 import BackButton from '../../BackButton';
 
-const MySwal = withReactContent(Swal);
 
 const ManageJudges = observer(() => {
     const [judges, setJudges] = useState([]);
@@ -30,11 +28,11 @@ const ManageJudges = observer(() => {
             .then(data => {
                 console.log('Success:', data);
                 fetchPotentialJudges(); // Refresh the potential judges list after successful upload
-                MySwal.fire('Success', 'Potential judges data uploaded successfully!', 'success');
+                Swal.fire('Success', 'Potential judges data uploaded successfully!', 'success');
             })
             .catch((error) => {
                 console.error('Error:', error);
-                MySwal.fire('Error', 'Error uploading potential judges data!', 'error');
+                Swal.fire('Error', 'Error uploading potential judges data!', 'error');
             });
         }
     };
@@ -110,7 +108,7 @@ const ManageJudges = observer(() => {
     }, []);
     
     const openJudgesListModal = () => {
-        MySwal.fire({
+        Swal.fire({
             title: 'Registered Judges',
             html: '<div id="judgesListContainer"></div>',
             showCancelButton: true,
@@ -211,7 +209,7 @@ const ManageJudges = observer(() => {
     };
 
     const openPotentialJudgesListModal = () => {
-        MySwal.fire({
+        Swal.fire({
             title: 'Potential Judges',
             html: '<div id="potentialJudgesListContainer"></div>',
             showCancelButton: true,
@@ -329,7 +327,7 @@ const ManageJudges = observer(() => {
     };
 
     const addNewPreference = async () => {
-        const { value: newPreference } = await MySwal.fire({
+        const { value: newPreference } = await Swal.fire({
             title: 'Add New Preference',
             input: 'text',
             inputLabel: 'Preference Name',
@@ -355,13 +353,13 @@ const ManageJudges = observer(() => {
                 });
 
                 if (response.ok) {
-                    MySwal.fire('Success', 'Preference added successfully!', 'success');
+                    Swal.fire('Success', 'Preference added successfully!', 'success');
                 } else {
-                    MySwal.fire('Error', 'Failed to add preference', 'error');
+                    Swal.fire('Error', 'Failed to add preference', 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                MySwal.fire('Error', 'An error occurred while adding the preference', 'error');
+                Swal.fire('Error', 'An error occurred while adding the preference', 'error');
             }
         }
     };
@@ -371,7 +369,7 @@ const ManageJudges = observer(() => {
             const response = await fetch('http://localhost:3001/admin/preferences');
             const preferences = await response.json();
 
-            MySwal.fire({
+            Swal.fire({
                 title: 'Remove Preferences',
                 html: '<div id="preferencesListContainer"></div>',
                 showCancelButton: true,
@@ -387,7 +385,7 @@ const ManageJudges = observer(() => {
             });
         } catch (error) {
             console.error('Error fetching preferences:', error);
-            MySwal.fire('Error', 'An error occurred while fetching the preferences', 'error');
+            Swal.fire('Error', 'An error occurred while fetching the preferences', 'error');
         }
     };
 
@@ -451,13 +449,13 @@ const ManageJudges = observer(() => {
             });
 
             if (response.ok) {
-                MySwal.fire('Success', 'Preferences removed successfully!', 'success');
+                Swal.fire('Success', 'Preferences removed successfully!', 'success');
             } else {
-                MySwal.fire('Error', 'Failed to remove preferences', 'error');
+                Swal.fire('Error', 'Failed to remove preferences', 'error');
             }
         } catch (error) {
             console.error('Error:', error);
-            MySwal.fire('Error', 'An error occurred while removing the preferences', 'error');
+            Swal.fire('Error', 'An error occurred while removing the preferences', 'error');
         }
     };
 

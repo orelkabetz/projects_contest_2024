@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useNavigate } from 'react-router-dom';
 import Login from './Login';
 import Register from './Register';
@@ -14,13 +14,14 @@ import AssignProjects from './users/admin/assign-projects';
 import ExportData from './users/admin/export-data';
 import './App.css';
 import { observer } from 'mobx-react-lite';
-import appStore from './stores/AppStore';
-import { useStore, StoreProvider } from './stores';
-
+import { storages } from './stores';
+/**
+ * Make sure that the user has the premissions of admin
+ */
 const AdminLayout = observer(() => {
   const navigate = useNavigate();
-  const { userStore, appStore } = useStore();
-  if (userStore.user?.type !== 'admin' && !appStore.isLoading) {
+  const { userStorage, appStorage } = storages;
+  if (userStorage.user?.type !== 'admin' && !appStorage.isLoading) {
     return navigate('/');
   }
   return (
@@ -30,22 +31,28 @@ const AdminLayout = observer(() => {
   );
 });
 
+/**
+ * Make sure that the user has the premissions of judge
+ */
 const JudgeLayout = observer(() => {
   const navigate = useNavigate();
-  const { userStore, appStore } = useStore();
-  if (userStore.user?.type !== 'judge' && !appStore.isLoading) {
+  const { userStorage, appStorage } = storages;
+  if (userStorage.user?.type !== 'judge' && !appStorage.isLoading) {
     return navigate('/');
   }
   return <Outlet />;
 });
 
+/**
+ * make the user get into the right page if he is alrady logged in
+ */
 const AuthLayout = observer(() => {
   const navigate = useNavigate();
-  const { userStore, appStore } = useStore();
-  if (!appStore.isLoading && userStore.user) {
-    if (userStore.user?.type === 'admin') {
+  const { userStorage, appStorage } = storages;
+  if (!appStorage.isLoading && userStorage.user) {
+    if (userStorage.user?.type === 'admin') {
       return navigate('/admin');
-    } else if (userStore.user?.type === 'judge') {
+    } else if (userStorage.user?.type === 'judge') {
       return navigate('/judge');
     }
   }
@@ -53,13 +60,13 @@ const AuthLayout = observer(() => {
 });
 
 const App = observer(() => {
-  const { userStore } = useStore();
+  const { userStorage, appStorage } = storages;
   const initiate = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) return;
-    appStore.isLoading = true;
-    await userStore.getDataFromToken(token);
-    appStore.isLoading = false;
+    appStorage.isLoading = true;
+    await userStorage.getDataFromToken(token);
+    appStorage.isLoading = false;
   }, []);
 
   useEffect(() => {
@@ -67,11 +74,10 @@ const App = observer(() => {
   }, []);
 
   return (
-    <StoreProvider>
       <Router>
       <div className="app-container">
         <h1>MTA Final Projects</h1>
-        <LogoutButton userStore={userStore} />
+        <LogoutButton userStorage={userStorage} />
         <Routes>
           <Route path="/" element={<AuthLayout/>} >
             <Route index element={<Login />} />
@@ -93,7 +99,6 @@ const App = observer(() => {
         </Routes>
       </div>
     </Router>
-    </StoreProvider>
   );
 });
 

@@ -1,16 +1,14 @@
 import React from 'react';
 import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 import { useNavigate } from 'react-router-dom';
 import './BackButton.css';
 
-const MySwal = withReactContent(Swal);
 
 const BackButton = ({ route }) => {
   const navigate = useNavigate();
 
   const handleBackButtonClick = () => {
-    MySwal.fire({
+    Swal.fire({
       title: 'Confirm',
       text: `Are you sure you want to go back?`,
       icon: 'question',

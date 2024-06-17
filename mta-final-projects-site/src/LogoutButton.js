@@ -1,7 +1,9 @@
 import React from 'react';
 import Swal from 'sweetalert2';
+import { storages } from './stores';
 
 const LogoutButton = () => {
+    const {userStorage} = storages
     const handleLogout = () => {
         Swal.fire({
             title: 'Confirm Logout',
@@ -12,13 +14,7 @@ const LogoutButton = () => {
             cancelButtonColor: '#d33',
             confirmButtonText: 'Logout'
         }).then((result) => {
-            if (result.isConfirmed) {
-                // Clear localStorage
-                localStorage.clear();
-                
-                // Reload the page to restart the app
-                window.location.reload();
-            }
+            if (result.isConfirmed)  userStorage.logout()
         });
     };
 
