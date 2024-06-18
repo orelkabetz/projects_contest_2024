@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import ReactDOM from 'react-dom/client';
 import BackButton from '../../BackButton';
+import ExportData from './export-data';
 
 const MySwal = withReactContent(Swal);
 
@@ -481,6 +482,7 @@ const ManageJudges = observer(() => {
                 <h2>Preference Subjects Options</h2>
                 <button onClick={addNewPreference} style={{ marginRight: '10px' }}>Add Preference</button>
                 <button onClick={removePreferences}>Remove Preference</button>
+                <ExportData url='http://localhost:3001/admin/judges/judgesList' />
             </div>
         </div>
     );

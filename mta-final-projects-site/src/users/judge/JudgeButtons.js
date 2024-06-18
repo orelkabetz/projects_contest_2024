@@ -3,6 +3,7 @@ import React from 'react';
 import './JudgeButtons.css'; // Import CSS file for styling
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
+import ExportData from '../admin/export-data';
 
 const JudgeButtons = observer(() => {
   const navigate = useNavigate();

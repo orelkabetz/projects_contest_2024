@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import ProjectList from '../../ProjectsList'; // Ensure the correct path to ProjectList component
 import BackButton from '../../BackButton';
+import ExportData from './export-data';
 
 const ManageProjects = observer(() => {
     const handleFileUpload = (event) => {
@@ -37,6 +38,7 @@ const ManageProjects = observer(() => {
             <div>
                 <h2>Projects List</h2>
                 <ProjectList endpoint="http://localhost:3001/admin/projects/projectsList" />
+                <ExportData></ExportData>
             </div>
         </div>
     );
