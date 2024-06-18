@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // Import Link for navigation
 import './Login.css';
-import userStore from './stores/UserStore';
+import userStorage from './stores/UserStorage';
 import { observer } from 'mobx-react-lite';
-import { useStore } from './stores';
+import { storages } from './stores';
 
 const Login = observer(() => {
-  const {userStore} = useStore()
+  const {userStorage} = storages
   const [userID, setUsernameID] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ const Login = observer(() => {
       if (data.success) {
         // Store the token in local storage or session storage
         localStorage.setItem('token', data.token);
-        userStore.user = data.user;
+        userStorage.user = data.user;
         // Redirect based on user type
         if (data.user.type === 'admin') {
           navigate('/admin');

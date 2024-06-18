@@ -1,13 +1,13 @@
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import AvailablePreferences from './AvailablePreferences';
-import { useStore } from '../../stores';
+import { storages } from '../../stores';
 import BackButton from '../../BackButton';
 
 
 const ProfileSetup = observer(() => {
-    const {userStore} = useStore()
-    const user = userStore.user
+    const {userStorage} = storages
+    const user = userStorage.user
 
   if (!user) {
     // Handle the case when the user object is null

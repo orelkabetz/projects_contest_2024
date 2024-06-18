@@ -1,14 +1,14 @@
-import {makeAutoObservable, makeObservable, observable} from "mobx"
+import {makeAutoObservable, observable} from "mobx"
 
-import appStore from "./AppStore";
-
-class UserStore {
+class UserStorage {
   /**
   * @param user has "type" and "name" in it  
   */
   user = null
   constructor() {
-    makeObservable(this)
+    makeAutoObservable(this, {
+      user: observable
+    })
   }
 
   async getDataFromToken(token) {
@@ -31,5 +31,5 @@ class UserStore {
   }
 }
 
-const userStore = new UserStore()
-export default userStore
+const userStorage = new UserStorage()
+export default userStorage

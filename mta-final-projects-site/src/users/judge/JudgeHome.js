@@ -1,11 +1,11 @@
 import React from 'react';
 import JudgeButtons from './JudgeButtons'; // Import JudgeButtons component
-import { useStore } from '../../stores';
+import { storages } from '../../stores';
 import { observer } from 'mobx-react-lite';
 
 const JudgeHome = observer( () => {
-    const {userStore} = useStore()
-    const user = userStore.user
+    const {userStorage} = storages
+    const user = userStorage.user
     // Function to handle file upload
     const handleFileUpload = (event) => {
         const file = event.target.files[0]; // Get the file from the event
