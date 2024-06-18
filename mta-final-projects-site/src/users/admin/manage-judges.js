@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import ReactDOM from 'react-dom/client';
 import BackButton from '../../BackButton';
+import ExportData from './export-data';
 
 
 const ManageJudges = observer(() => {
@@ -479,6 +480,7 @@ const ManageJudges = observer(() => {
                 <h2>Preference Subjects Options</h2>
                 <button onClick={addNewPreference} style={{ marginRight: '10px' }}>Add Preference</button>
                 <button onClick={removePreferences}>Remove Preference</button>
+                <ExportData url='http://localhost:3001/admin/judges/judgesList' />
             </div>
         </div>
     );
