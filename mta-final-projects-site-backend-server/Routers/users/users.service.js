@@ -206,6 +206,35 @@ class UsersService {
       return { success: false, error: 'Failed to remove preference' };
     }
   }
+
+  async updateUserField(userID, field, newValue) {
+    try {
+      const user = await UserDB.findOne({ ID: userID });
+      if (!user) {
+        return { success: false, error: 'User not found' };
+      }
+
+      if (field === 'password') {
+        user.password = newValue; 
+        await user.save();
+      } else if (field === 'name') {
+        user.name = newValue;
+        await user.save();
+      } else if (field === 'email'){
+        console.log("reached email"); 
+        user.email = newValue;
+        await user.save();
+      } else {
+        return { success: false, error: 'Invalid field' };
+      }
+
+      await user.save();
+      return { success: true };
+    } catch (error) {
+      console.error('Error updating user field:', error);
+      return { success: false, error: 'Failed to update user field' };
+    }
+  }
 }
 
 const usersSerivce = new UsersService();
