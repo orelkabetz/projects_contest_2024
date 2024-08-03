@@ -170,4 +170,28 @@ router.post('/preferences/save', async (req, res) => {
   }
 });
 
+
+router.post('/user/updateField', async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    const user = await usersSerivce.checkToken(token);
+
+    if (!user) {
+      return res.status(401).json({ success: false, error: 'Invalid token' });
+    }
+
+    const { field,newValue } = req.body;
+    const result = await usersSerivce.updateUserField(user.id, field,newValue);
+
+    if (result.success) {
+      res.json({ success: true, message: 'saved successfully' });
+    } else {
+      res.json({ success: false, error: result.error });
+    }
+  } catch (error) {
+    console.error('Error saving field:', error);
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
+});
+
 module.exports = router;
