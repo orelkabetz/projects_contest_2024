@@ -1,6 +1,9 @@
 const express = require('express');
 const { usersSerivce } = require('./users.service');
 const router = express.Router();
+const { getCollections } = require('../../DB/index');
+
+const collections = getCollections()
 
 router.post('/login', async (req, res) => {
   try {
@@ -193,5 +196,20 @@ router.post('/user/updateField', async (req, res) => {
     res.status(500).json({ success: false, error: 'Server error' });
   }
 });
+
+router.get('/projectsForJudge/projectList', async (req, res) => {
+  // try {
+  //   // const projects = await projectsDB.find(
+  //   //   { WorkshopId: { $in: [150028, 150058] } },
+  //   //   { projection: { Title: 1, WorkshopId: 1 } }
+  //   // ).toArray();
+  //   projects = {"test": "test"}
+  //   res.json(projects);
+  // } catch (error) {
+  //   console.error('Error fetching projects:', error);
+  //   res.status(500).json({ error: 'An error occurred while fetching projects' });
+  // }
+});
+
 
 module.exports = router;
