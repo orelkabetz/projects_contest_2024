@@ -1,0 +1,39 @@
+.grading-form {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .grading-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .grading-form p {
+    margin: 10px 0;
+    font-size: 1.1rem;
+  }
+  
+  .form-control {
+    margin-bottom: 15px;
+  }
+  
+  .form-label {
+    margin-bottom: 5px;
+    text-align: center;
+    font-size: 1.2rem !important; /* Increased font size */
+    font-weight: bold !important; /* Make the text bold */
+    color: #1976d2 !important; /* Match the button color */
+  }
+  
+  .form-select {
+    width: 50%;
+    margin: 0 auto;
+  }
+  
+  .grading-form button {
+    margin-top: 20px;
+  }
