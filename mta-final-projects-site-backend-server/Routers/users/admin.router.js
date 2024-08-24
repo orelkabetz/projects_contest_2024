@@ -70,7 +70,7 @@ getCollections()
                 [searchField]: { $regex: search, $options: 'i' }
             };
         } else if (search) {
-            // Fallback to the existing logic if only search term is provided without a specific fieldש
+            // Fallback to the existing logic if only search term is provided without a specific field
             query = {
                 $or: [
                     { name: { $regex: search, $options: 'i' } },
@@ -85,25 +85,14 @@ getCollections()
             };
         }
 
-        const projects = await collections.project_schemas.find(query, {
-            projection: {
-                name: 1,
-                Title: 1,
-                WorkshopName: 1,
-                WorkshopId: 1,
-                ProjectOwners: 1,
-                Lecturer: 1,
-                StudentName: 1,
-                StudentEmail: 1,
-                StudentPhone: 1
-            }
-        }).toArray();
+        const projects = await collections.project_schemas.find(query).toArray();
         res.json(projects);
     } catch (error) {
         console.error('Error fetching projects:', error);
         res.status(500).json({ error: 'An error occurred while fetching projects' });
     }
-  });
+});
+
 // Route to get all preferences
 
 router.get('/preferences', async (req, res) => {
