@@ -1,6 +1,33 @@
 const ProjectsJudgesGroup = require('../../DB/entities/projects_judges_group.entity');
 const projectsDB = require('../../DB/entities/project.entity');
 const Grade = require('../../DB/entities/grade.entity'); // Ensure this is the correct path
+const axios = require('axios');
+const fs = require('fs');
+const FormData = require('form-data');
+
+// Function to upload the projects CSV file
+async function uploadProjectsCSV(filePath) {
+  try {
+    // Create a form and append the CSV file
+    const form = new FormData();
+    form.append('file', fs.createReadStream(filePath));
+
+    // Make the POST request to the /projects endpoint
+    const response = await axios.post('http://localhost:3001/uploads/projects', form, {
+      headers: {
+        ...form.getHeaders(),
+      },
+    });
+
+    console.log('File uploaded successfully:', response.data);
+  } catch (error) {
+    if (error.response) {
+      console.error('Error response:', error.response.data);
+    } else {
+      console.error('Error uploading file:', error.message);
+    }
+  }
+}
 
 async function insertProjectsJudgesGroup() {
   try {
@@ -45,9 +72,15 @@ async function insertGradeTest(projectId) {
   }
 }
 
-// Main function for debugging
+
+// Main function to run your scripts
 async function main() {
-  await insertGradeTest(150058);
+  const filePath = '/Users/orelkabetz/Documents/CS/4th Year/project/Projects 2024 14.7.csv'; // Replace with your actual CSV file path
+  await uploadProjectsCSV(filePath);
+
+  // Call other functions or scripts you want to run
+  // await insertProjectsJudgesGroup(); // Example of another function
 }
 
-main(); // Call main to execute the script
+// Run the main function
+main().catch(err => console.error('Script execution failed:', err));

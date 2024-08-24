@@ -5,8 +5,8 @@ const client = require('../');
 const project_Schema = new mongoose.Schema({
     Title: { type: String, required: true },
     WorkshopName: { type: String, required: true },
-    WorkshopId: { type: String, unique: true, required: true },
-    ProjectNumber: { type: String },
+    WorkshopId: { type: String, required: true },
+    ProjectNumber: { type: String , unique: true, required: true},
     ProjectInfo: { type: String},
     ProjectOwners: { type: String, required: true },
     ProjectImage: { type: String },
@@ -23,7 +23,7 @@ const project_Schema = new mongoose.Schema({
     GitHubLink: { type: String },
     Poster: { type: String },
     Presentation: { type: String },
-    ProjectYear: { type: String, required: true },
+    ProjectYear: { type: String },
     Projects_All: { type: String },
     CourseOfStudy: { type: String },
 } ,{timestamps: true});
