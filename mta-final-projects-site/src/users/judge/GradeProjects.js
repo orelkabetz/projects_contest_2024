@@ -1,56 +1,86 @@
-import { observer } from 'mobx-react-lite';
+// src/components/GradeProjects/GradeProjects.jsx
+
 import React, { useState, useEffect } from 'react';
-import swal from 'sweetalert';
-import BackButton from '../../BackButton';
+import { observer } from 'mobx-react-lite';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { storages } from '../../stores';
 import ProjectGradingForm from './ProjectGradingForm';
-import './GradeProjects.css'; 
+import BackButton from '../../BackButton';
+import './GradeProjects.css';
+
+const MySwal = withReactContent(Swal);
 
 const GradeProjects = observer(() => {
   const { userStorage } = storages;
   const user = userStorage.user;
+  const token = localStorage.getItem('token');
+
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [formData, setFormData] = useState({
-    floor: 0,
-    room: 0,
     complexity: 10,
     usability: 10,
     innovation: 10,
     presentation: 10,
     proficiency: 10,
-    total: 50,
     additionalComment: '',
+    total: 50,
   });
+  const [loading, setLoading] = useState(true);
 
-//   useEffect(() => {
-//     const fetchProjectsForUser = async () => {
-//       try {
-//         const groupResponse = await fetch(`http://localhost:3001/users/projectsForJudge/projectList`);
-//         const projectsData = await groupResponse.json();
-//         setProjects(projectsData);  // Assuming projectsData contains the array of projects
-//       } catch (error) {
-//         console.error('Error fetching projects:', error);
-//       }
-//     };
-  
-//     fetchProjectsForUser();
-//   }, []);
+  // Fetch projects assigned to the judge on component mount
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/projectsForJudge/projectList', {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-  const handleSelectChange = (event) => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch projects');
+        }
+
+        const data = await response.json();
+        setProjects(data.projects);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+        MySwal.fire('Error', 'Failed to fetch projects. Please try again.', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, [token]);
+
+  // Handle changes in grading inputs
+  const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setFormData({
+    const numericValue = parseInt(value, 10) || 0;
+
+    const updatedFormData = {
       ...formData,
-      [name]: value,
-      total: calculateTotal({ ...formData, [name]: value }),
+      [name]: numericValue,
+    };
+
+    const total =
+      updatedFormData.complexity +
+      updatedFormData.usability +
+      updatedFormData.innovation +
+      updatedFormData.presentation +
+      updatedFormData.proficiency;
+
+    setFormData({
+      ...updatedFormData,
+      total,
     });
   };
 
-  const calculateTotal = (data) => {
-    const { complexity, usability, innovation, presentation, proficiency } = data;
-    return complexity + usability + innovation + presentation + proficiency;
-  };
-
+  // Handle comment input change
   const handleCommentChange = (event) => {
     const { value } = event.target;
     setFormData({
@@ -59,52 +89,110 @@ const GradeProjects = observer(() => {
     });
   };
 
-  const handleSubmit = (event) => {
+  // Handle form submission
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    swal({
-      title: "Are you sure?",
-      text: "Once submitted, you will not be able to change the grades!",
-      icon: "warning",
-      buttons: true,
-      dangerMode: true,
-    }).then((willSubmit) => {
-      if (willSubmit) {
-        console.log('Submitted Data:', formData);
+
+    const confirmation = await MySwal.fire({
+      title: 'Confirm Submission',
+      text: 'Are you sure you want to submit these grades? This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, submit',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (confirmation.isConfirmed) {
+      try {
+        const response = await fetch('http://localhost:3001/judge/submitGrade', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            projectId: selectedProject.id,
+            grades: formData,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to submit grades');
+        }
+
+        const data = await response.json();
+
+        MySwal.fire('Success', data.message, 'success');
+
+        // Remove the graded project from the list
+        setProjects(projects.filter((project) => project.id !== selectedProject.id));
+        setSelectedProject(null);
+        resetFormData();
+      } catch (error) {
+        console.error('Error submitting grades:', error);
+        MySwal.fire('Error', 'Failed to submit grades. Please try again.', 'error');
       }
+    }
+  };
+
+  // Reset form data to initial state
+  const resetFormData = () => {
+    setFormData({
+      complexity: 10,
+      usability: 10,
+      innovation: 10,
+      presentation: 10,
+      proficiency: 10,
+      additionalComment: '',
+      total: 50,
     });
   };
 
+  // Render loading state
+  if (loading) {
+    return <div className="loading">Loading projects...</div>;
+  }
+
   return (
-    <div className="grading-form">
-      <h2>Hello, Grade Project</h2>
+    <div className="grading-container">
+      <BackButton route="/judge" />
+      <h2 className="welcome-message">Welcome, {user?.name}! Let's grade some projects.</h2>
 
-      {selectedProject ? (
-        <>
-          <p><strong>Floor:</strong> {formData.floor}</p>
-          <p><strong>Room:</strong> {formData.room}</p>
-
+      {!selectedProject ? (
+        <div className="projects-list">
+          <h3>Select a Project to Grade:</h3>
+          {projects.length > 0 ? (
+            projects.map((project) => (
+              <div
+                key={project.id}
+                className="project-card"
+                onClick={() => setSelectedProject(project)}
+              >
+                <h4>{project.name}</h4>
+                <p>
+                  <strong>Floor:</strong> {project.floor}
+                </p>
+                <p>
+                  <strong>Room:</strong> {project.room}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p>No projects assigned to you at the moment.</p>
+          )}
+        </div>
+      ) : (
+        <div className="grading-form">
+          <h3>Grading: {selectedProject.name}</h3>
           <ProjectGradingForm
             formData={formData}
-            handleSelectChange={handleSelectChange}
+            handleInputChange={handleInputChange}
             handleCommentChange={handleCommentChange}
             handleSubmit={handleSubmit}
+            handleBack={() => setSelectedProject(null)}
           />
-        </>
-      ) : (
-        <div>
-          {projects.map((project) => (
-            <button
-              key={project.ID}
-              onClick={() => setSelectedProject(project)}
-              style={{ display: 'block', marginBottom: '10px' }}
-            >
-              {project.name}
-            </button>
-          ))}
         </div>
       )}
-
-      <BackButton route="/judge"/>
     </div>
   );
 });

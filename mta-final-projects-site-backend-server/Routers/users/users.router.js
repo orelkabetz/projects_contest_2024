@@ -3,8 +3,6 @@ const { usersSerivce } = require('./users.service');
 const router = express.Router();
 const { getCollections } = require('../../DB/index');
 
-const collections = getCollections()
-
 router.post('/login', async (req, res) => {
   try {
     const { userID, password } = req.body;
@@ -197,19 +195,51 @@ router.post('/user/updateField', async (req, res) => {
   }
 });
 
-router.get('/projectsForJudge/projectList', async (req, res) => {
-  // try {
-  //   // const projects = await projectsDB.find(
-  //   //   { WorkshopId: { $in: [150028, 150058] } },
-  //   //   { projection: { Title: 1, WorkshopId: 1 } }
-  //   // ).toArray();
-  //   projects = {"test": "test"}
-  //   res.json(projects);
-  // } catch (error) {
-  //   console.error('Error fetching projects:', error);
-  //   res.status(500).json({ error: 'An error occurred while fetching projects' });
-  // }
-});
+
+// Assuming getCollections is defined elsewhere and returns a promise with the collections
+getCollections()
+  .then((collections) => {
+    const projectsJudgesGroupsDB = collections.projects_judges_groups;
+    const projectsDB = collections.project_schemas;
+
+    router.get('/projectsForJudge/projectList', async (req, res) => {
+      try {
+        // Verify and decode the token to get the user information
+        const token = req.headers.authorization.split(' ')[1];
+        const user = await usersSerivce.checkToken(token);
+
+        if (!user) {
+          return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        // Fetch the relevant project_ids from the projects_judges_groups collection
+        console.log('fetching from projectsJudgesGroupsDB: ', user.id)
+        const groupRecords = await projectsJudgesGroupsDB.find(
+          { judge_ids: user.id },
+          { projection: { project_ids: 1 } }
+        ).toArray();
+        console.log(groupRecords)
+        // Extract project_ids from the groupRecords
+        const projectIds = groupRecords.map(record => record.project_id);
+
+        // Fetch the projects related to these project_ids
+        const projects = await projectsDB.find(
+          { _id: { $in: projectIds } },
+          { projection: { Title: 1, WorkshopId: 1, _id: 1 } }
+        ).toArray();        
+
+        res.json(projects);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+        res.status(500).json({ error: 'An error occurred while fetching projects' });
+      }
+    });
+  })
+  .catch((error) => {
+    console.error('Error setting up routes:', error);
+  });
+
+
 
 
 module.exports = router;
