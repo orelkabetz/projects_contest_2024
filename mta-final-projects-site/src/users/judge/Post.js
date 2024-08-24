@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { FaGithub } from 'react-icons/fa'; // Import GitHub icon from react-icons
+import { FaGithub, FaStar } from 'react-icons/fa'; // Import GitHub and Star icons
 
 const PostContainer = styled.div`
+    position: relative;
     border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 16px;
+    border-radius: 8px;
+    padding: 20px;
     margin-bottom: 16px;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #f0f8ff;
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 4px 8px 16px rgba(0, 0, 0, 0.15);
+    }
 `;
 
 const Title = styled.h2`
@@ -24,14 +31,29 @@ const Content = styled.p`
 `;
 
 const Image = styled.img`
-    width: 100%;
+    width: 50%; /* Reduced the image size by 50% */
     height: auto;
-    border-radius: 5px;
-    margin-bottom: 10px;
+    border-radius: 8px;
+    margin-bottom: 16px;
 `;
 
 const ExpandableInfo = styled.div`
     margin-top: 10px;
+`;
+
+const ShowInfoButton = styled.button`
+    padding: 10px 20px;
+    background-color: #175a94; /* Match the GradeButton color */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 10px;
+
+    &:hover {
+        background-color: #0e3f6d; /* Darker color on hover */
+    }
 `;
 
 const GithubLink = styled.a`
@@ -50,7 +72,48 @@ const GithubLink = styled.a`
     }
 `;
 
-const Post = ({ project }) => {
+const GradeButton = styled.button`
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background-color: #175a94;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+    
+    &:hover {
+        background-color: #0e3f6d;
+        transform: scale(1.1);
+    }
+
+    &:hover::after {
+        content: 'Click to grade the project';
+        position: absolute;
+        top: -40px;
+        right: 0;
+        background-color: #333;
+        color: #fff;
+        padding: 5px;
+        border-radius: 3px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0.9;
+    }
+
+    svg {
+        margin: 0;
+    }
+`;
+
+const Post = ({ project, onGrade, showGradeButton }) => {
     const [isInfoExpanded, setIsInfoExpanded] = useState(false);
 
     // Convert Wix image URL to standard HTTPS URL
@@ -79,27 +142,20 @@ const Post = ({ project }) => {
             <Image 
                 src={imageUrl} 
                 alt={project.Title} 
-                style={{ 
-                    width: '50%', 
-                    height: 'auto', 
-                    borderRadius: '8px', 
-                    marginBottom: '16px' 
-                }} 
             />
-            <Content><strong>שם הסדנה:</strong> {project.WorkshopName}</Content>
-            <Content><strong>מספר הסדנה:</strong> {project.WorkshopId}</Content>
-            <Content><strong>סטודנטים:</strong> {project.ProjectOwners}</Content>
-            <Content><strong>שנה:</strong> {project.ProjectYear}</Content>
-            <Content><strong>שם המנחה:</strong> {project.Lecturer}</Content>
-            <Content><strong>טלפון:</strong> {project.StudentPhone}</Content>
+            <Content><strong>Workshop Name:</strong> {project.WorkshopName}</Content>
+            <Content><strong>Workshop ID:</strong> {project.WorkshopId}</Content>
+            <Content><strong>Project Owners:</strong> {project.ProjectOwners}</Content>
+            <Content><strong>Year:</strong> {project.ProjectYear}</Content>
+            <Content><strong>Lecturer:</strong> {project.Lecturer}</Content>
+            <Content><strong>Phone:</strong> {project.StudentPhone}</Content>
             <Content><strong>Email:</strong> {project.StudentEmail}</Content>
 
-            
             {/* Expandable Info Section */}
             <ExpandableInfo>
-                <button onClick={() => setIsInfoExpanded(!isInfoExpanded)}>
+                <ShowInfoButton onClick={() => setIsInfoExpanded(!isInfoExpanded)}>
                     {isInfoExpanded ? 'Hide Info' : 'Show Info'}
-                </button>
+                </ShowInfoButton>
                 {isInfoExpanded && (
                     <div>
                         <Content><strong>Info:</strong> {project.ProjectInfo}</Content>
@@ -113,6 +169,13 @@ const Post = ({ project }) => {
                     <FaGithub size={20} />
                     View on GitHub
                 </GithubLink>
+            )}
+
+            {/* Conditionally render Grade Button */}
+            {showGradeButton && (
+                <GradeButton onClick={onGrade}>
+                    <FaStar size={28} />
+                </GradeButton>
             )}
         </PostContainer>
     );

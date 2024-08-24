@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import styled from 'styled-components';
 import { storages } from '../../stores';
-import Post from './Post'; // Import the Post component
+import ProjectGradingForm from './ProjectGradingForm';
 import BackButton from '../../BackButton';
-import SearchBar from '../../SearchBar';
-import ProjectGradingForm from './ProjectGradingForm'; // Adjust the path if necessary
+import SearchBar from '../../SearchBar'; // Import SearchBar component
 import './GradeProjects.css';
 
 const MySwal = withReactContent(Swal);
@@ -30,7 +29,17 @@ const EndMessage = styled.p`
     text-align: center;
 `;
 
-const GradeProjects = observer(() => {
+const ProjectCard = styled.div`
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+`;
+
+const GradeProjectsFeed = observer(() => {
     const { userStorage } = storages;
     const user = userStorage.user;
     const token = localStorage.getItem('token');
@@ -51,32 +60,31 @@ const GradeProjects = observer(() => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchField, setSearchField] = useState('');
 
-    // Define the fetchProjects function inside the component
-    const fetchProjects = async (query = '') => {
-        try {
-            setLoading(true);
-            const response = await fetch(`http://localhost:3001/projectsForJudge/projectList${query}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch projects');
-            }
-
-            const data = await response.json();
-            setProjects(data.projects);
-        } catch (error) {
-            console.error('Error fetching projects:', error);
-            MySwal.fire('Error', 'Failed to fetch projects. Please try again.', 'error');
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch('http://localhost:3001/projectsForJudge/projectList', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch projects');
+                }
+
+                const data = await response.json();
+                setProjects(data);
+            } catch (error) {
+                console.error('Error fetching projects:', error);
+                MySwal.fire('Error', 'Failed to fetch projects. Please try again.', 'error');
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchProjects();
     }, [token]);
 
@@ -183,8 +191,13 @@ const GradeProjects = observer(() => {
     const handleSearchButtonClick = (event) => {
         event.preventDefault();
         if (searchField && searchTerm) {
-            const query = `?search=${searchTerm}&searchField=${searchField}`;
-            fetchProjects(query);
+            const filteredProjects = projects.filter((project) =>
+                project[searchField]
+                    .toString()
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase())
+            );
+            setProjects(filteredProjects);
             setFiltersActive(true);
         } else {
             MySwal.fire('Error', 'Please select a field and enter a search term.', 'error');
@@ -224,13 +237,16 @@ const GradeProjects = observer(() => {
                     <h3>Select a Project to Grade:</h3>
                     {projects.length > 0 ? (
                         projects.map((project) => (
-                          <Post
-                              key={project._id}
-                              project={project}
-                              onGrade={() => setSelectedProject(project)} // Pass your onGrade function
-                              showGradeButton={true} // Show the Grade button
-                          />
-                      ))
+                            <ProjectCard
+                                key={project._id}
+                                onClick={() => setSelectedProject(project)}
+                            >
+                                <h4>{project.Title}</h4>
+                                <p>
+                                    <strong>Workshop ID:</strong> {project.WorkshopId}
+                                </p>
+                            </ProjectCard>
+                        ))
                     ) : (
                         <EndMessage>No projects assigned to you at the moment.</EndMessage>
                     )}
@@ -251,4 +267,4 @@ const GradeProjects = observer(() => {
     );
 });
 
-export default GradeProjects;
+export default GradeProjectsFeed;

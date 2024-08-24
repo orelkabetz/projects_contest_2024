@@ -1,45 +1,149 @@
 import React from 'react';
 import { Select, MenuItem, InputLabel, FormControl, Button } from '@mui/material';
+import { AiOutlineArrowLeft } from 'react-icons/ai'; // Importing a back arrow icon
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+
+// Styled components to match the sidebar style
+const StyledFormControl = styled(FormControl)`
+  margin-bottom: 16px;
+  .MuiInputLabel-root {
+    color: #175a94;
+    font-weight: bold;
+  }
+  .MuiInputBase-root {
+    background-color: rgba(240, 248, 255, 0.9); 
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const StyledButton = styled(Button)`
+  background-color: #175a94 !important;
+  color: white !important;
+  border-radius: 8px !important;
+  padding: 9px 18px !important; /* Reduced padding by 25% */
+  font-weight: bold !important;
+  margin-top: 16px !important;
+  &:hover {
+    background-color: #0e3f6d !important;
+  }
+`;
+
+const BackButton = styled(Button)`
+  background-color: transparent;
+  color: #175a94;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 9px 18px; /* Reduced padding by 25% */
+  &:hover {
+    color: #0e3f6d;
+    background-color: transparent;
+  }
+`;
 
 const ProjectGradingForm = ({ formData, handleSelectChange, handleCommentChange, handleSubmit }) => {
+  const navigate = useNavigate();
+
+  // Function to calculate the total
+  const calculateTotal = (updatedFormData) => {
+    return (
+      updatedFormData.complexity +
+      updatedFormData.usability +
+      updatedFormData.innovation +
+      updatedFormData.presentation +
+      updatedFormData.proficiency
+    );
+  };
+
+  // Function to handle the change in select inputs
+  const handleSelectChangeAndTotalUpdate = (event) => {
+    const { name, value } = event.target;
+
+    // Create a new formData object with the updated value
+    const updatedFormData = {
+      ...formData,
+      [name]: parseInt(value, 10),
+    };
+
+    // Calculate the new total
+    const newTotal = calculateTotal(updatedFormData);
+
+    // Call the original handleSelectChange function
+    handleSelectChange({
+      target: {
+        name,
+        value: parseInt(value, 10),
+      },
+    });
+
+    // Update the total in the form data
+    updatedFormData.total = newTotal;
+
+    // Trigger the update with the new form data including the total
+    handleSelectChange({
+      target: {
+        name: 'total',
+        value: newTotal,
+      },
+    });
+  };
+
   return (
     <form onSubmit={handleSubmit}>
+      <BackButton onClick={() => navigate('/judge/grade-projects')}>
+        <AiOutlineArrowLeft size={20} style={{ marginRight: '8px' }} />
+        Back to Projects
+      </BackButton>
+      
       {['complexity', 'usability', 'innovation', 'presentation', 'proficiency'].map((field) => (
-        <FormControl fullWidth key={field} margin="normal" className="form-control">
-          <InputLabel id={`${field}-label`} className="form-label">
+        <StyledFormControl fullWidth key={field} margin="normal">
+          <InputLabel id={`${field}-label`}>
             {field.charAt(0).toUpperCase() + field.slice(1)} (1-10)
           </InputLabel>
-          <Select
-            labelId={`${field}-label`}
-            id={field}
-            name={field}
-            value={formData[field]}
-            onChange={handleSelectChange}
-            className="form-select"
-          >
-            {[...Array(10).keys()].map((n) => (
-              <MenuItem key={n + 1} value={n + 1}>{n + 1}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Select
+              labelId={`${field}-label`}
+              id={field}
+              name={field}
+              value={formData[field]}
+              onChange={handleSelectChangeAndTotalUpdate}
+              sx={{ width: '50%' }} // Set the width to 50%
+            >
+              {[...Array(10).keys()].map((n) => (
+                <MenuItem key={n + 1} value={n + 1}>{n + 1}</MenuItem>
+              ))}
+            </Select>
+          </div>
+        </StyledFormControl>
       ))}
+      
       <div className="form-group">
         <label htmlFor="additionalComment">Additional Comments</label>
         <textarea 
           className="form-control" 
           id="additionalComment" 
           rows="3" 
-          style={{ width: '100%' }}  
+          style={{ 
+            width: '100%', 
+            borderRadius: '6px', 
+            padding: '6px', 
+            backgroundColor: 'rgba(240, 248, 255, 0.9)', 
+            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' 
+          }}  
           placeholder="Enter any additional comments here"
           value={formData.additionalComment}
           onChange={handleCommentChange}
         />
       </div> 
+      
       <p><strong>Total:</strong> {formData.total}</p>
 
-      <Button variant="contained" color="primary" type="submit" fullWidth>
+      <StyledButton variant="contained" color="primary" type="submit" fullWidth>
         Finish Grading
-      </Button>
+      </StyledButton>
     </form>
   );
 };

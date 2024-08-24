@@ -36,8 +36,8 @@ async function insertProjectsJudgesGroup() {
     console.log(projectIds);
 
     const newGroup = new ProjectsJudgesGroup({
-      project_ids: projectIds,
-      judge_ids: [315668955], // Ensure this is the correct format (e.g., ObjectId or integer as needed)
+      project_ids: ['15003412','15005518','15004113','15006503','15006801','15001213','15006408'],
+      judge_ids: ['315668955'], // Ensure this is the correct format (e.g., ObjectId or integer as needed)
     });
 
     await newGroup.save();
@@ -75,11 +75,11 @@ async function insertGradeTest(projectId) {
 
 // Main function to run your scripts
 async function main() {
-  const filePath = '/Users/orelkabetz/Documents/CS/4th Year/project/Projects 2024 14.7.csv'; // Replace with your actual CSV file path
-  await uploadProjectsCSV(filePath);
+  // const filePath = '/Users/orelkabetz/Documents/CS/4th Year/project/Projects 2024 14.7.csv'; // Replace with your actual CSV file path
+  // await uploadProjectsCSV(filePath);
 
   // Call other functions or scripts you want to run
-  // await insertProjectsJudgesGroup(); // Example of another function
+  await insertProjectsJudgesGroup(); // Example of another function
 }
 
 // Run the main function

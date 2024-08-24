@@ -108,9 +108,13 @@ const Feed = () => {
                 loader={<Loader>Loading...</Loader>}
                 endMessage={<EndMessage>No more projects to show</EndMessage>}
             >
-                {projects.map((project, index) => (
-                    <Post key={index} project={project} />
-                ))}
+                {projects.map((project) => (
+                <Post
+                    key={project._id}
+                    project={project}
+                    showGradeButton={false} // Don't show the Grade button
+                />
+            ))}
             </InfiniteScroll>
         </FeedContainer>
     );
