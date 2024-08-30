@@ -2,6 +2,8 @@ const express = require('express');
 const { usersSerivce } = require('./users.service');
 const router = express.Router();
 const { getCollections } = require('../../DB/index');
+const Grade = require('../../DB/entities/grade.entity'); // Ensure this is the correct path
+
 
 router.post('/login', async (req, res) => {
   try {
@@ -236,6 +238,63 @@ getCollections()
       }
     });
     
+  })
+  .catch((error) => {
+    console.error('Error setting up routes:', error);
+  });
+
+  getCollections()
+  .then((collections) => {
+    router.post('/gradeProject', async (req, res) => {
+      try {
+        // Verify the token and get the user info
+        const token = req.headers.authorization.split(' ')[1];
+        const user = await usersSerivce.checkToken(token);
+        
+        if (!user) {
+          return res.status(401).json({ error: 'Unauthorized' });
+        }
+        
+        const judge_id = user.id; // Extract the judge's ID from the user object
+        const grades = req.body; // Get the grades from the request body
+        const projectId = req.query.projectId; // Get the project ID from the query string
+        console.log(projectId)
+        console.log(grades)
+
+        if (!projectId) {
+          return res.status(400).json({ error: 'Project ID is required.' });
+        }
+        // Check if the grade already exists for this judge and project
+        const existingGrade = await collections.grades.findOne({ judge_id, project_id: projectId });
+        if (existingGrade) {
+          return res.status(400).json({ error: 'Grade for this project already exists for this judge.' });
+        }
+
+        // Calculate the total grade
+        const totalGrade = grades.complexity + grades.usability + grades.innovation + grades.presentation + grades.proficiency;
+
+        // Create a new grade document
+        const newGrade = new Grade({
+          project_id: projectId,
+          judge_id: judge_id,
+          complexity: grades.complexity,
+          usability: grades.usability,
+          innovation: grades.innovation,
+          presentation: grades.presentation,
+          proficiency: grades.proficiency,
+          additionalComment: grades.additionalComment,
+          grade: totalGrade,
+        });
+
+        // Save the grade to the database
+        await collections.grades.insertOne(newGrade);
+
+        res.status(201).json({ message: 'Grade submitted successfully.' });
+      } catch (error) {
+        console.error('Error submitting grade:', error);
+        res.status(500).json({ error: 'An error occurred while submitting the grade.' });
+      }
+    });
   })
   .catch((error) => {
     console.error('Error setting up routes:', error);

@@ -124,10 +124,42 @@ const GradeProjects = observer(() => {
     };
 
     const handleSubmit = async () => {
-        // Placeholder method to handle finish grading action
-        console.log("Submitting form data to backend:", formData);
-        handleCloseDialog();
-    };
+      try {
+          // Construct the query string with the token and project ID
+          const token = localStorage.getItem('token');
+          const query = `?token=${token}&projectId=${selectedProject.ProjectNumber}`;
+          
+          // Prepare the request body with the formData
+          const response = await fetch(`http://localhost:3001/gradeProject${query}`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(formData),
+          });
+  
+          // Handle the response
+          if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.message || 'Failed to submit grades');
+          }
+  
+          // If the submission is successful
+          const data = await response.json();
+          console.log('Submission successful:', data.message);
+  
+          // Close the dialog after successful submission
+          handleCloseDialog();
+  
+          // Optionally, you can refresh the projects list or perform other actions
+      } catch (error) {
+          console.error('Error submitting grades:', error.message);
+          // Show the error to the user using an alert or notification
+          Swal.fire('Error', error.message, 'error');
+      }
+  };
+  
 
     const handleCancelClick = () => {
       // Close the dialog before showing the Swal confirmation
@@ -214,7 +246,7 @@ const GradeProjects = observer(() => {
                   <StyledCancelButton onClick={handleCancelClick}>
                     Cancel
                   </StyledCancelButton>
-                  <StyledSubmitButton variant="contained" type="submit">
+                  <StyledSubmitButton variant="contained" type="submit" onClick={handleSubmit}>
                     Finish Grading
                   </StyledSubmitButton>
                 </DialogActionsContainer>
