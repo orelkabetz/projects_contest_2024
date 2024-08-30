@@ -1,8 +1,11 @@
 import React from 'react';
 import { Select, MenuItem, InputLabel, FormControl, Button } from '@mui/material';
-import { AiOutlineArrowLeft } from 'react-icons/ai'; // Importing a back arrow icon
+import { AiOutlineArrowLeft } from 'react-icons/ai';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 // Styled components to match the sidebar style
 const StyledFormControl = styled(FormControl)`
@@ -44,9 +47,7 @@ const BackButton = styled(Button)`
   }
 `;
 
-const ProjectGradingForm = ({ formData, handleSelectChange, handleCommentChange, handleSubmit }) => {
-  const navigate = useNavigate();
-
+const ProjectGradingForm = ({ formData, handleSelectChange, handleCommentChange, handleSubmit, handleCancelClick }) => {
   // Function to calculate the total
   const calculateTotal = (updatedFormData) => {
     return (
@@ -80,9 +81,6 @@ const ProjectGradingForm = ({ formData, handleSelectChange, handleCommentChange,
     });
 
     // Update the total in the form data
-    updatedFormData.total = newTotal;
-
-    // Trigger the update with the new form data including the total
     handleSelectChange({
       target: {
         name: 'total',
@@ -92,12 +90,12 @@ const ProjectGradingForm = ({ formData, handleSelectChange, handleCommentChange,
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <BackButton onClick={() => navigate('/judge/grade-projects')}>
+    <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+      {/* <BackButton onClick={handleCancelClick}>
         <AiOutlineArrowLeft size={20} style={{ marginRight: '8px' }} />
-        Back to Projects
+        Cancel
       </BackButton>
-      
+       */}
       {['complexity', 'usability', 'innovation', 'presentation', 'proficiency'].map((field) => (
         <StyledFormControl fullWidth key={field} margin="normal">
           <InputLabel id={`${field}-label`}>
@@ -139,11 +137,9 @@ const ProjectGradingForm = ({ formData, handleSelectChange, handleCommentChange,
         />
       </div> 
       
-      <p><strong>Total:</strong> {formData.total}</p>
-
-      <StyledButton variant="contained" color="primary" type="submit" fullWidth>
-        Finish Grading
-      </StyledButton>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '16px' }}>
+        <p><strong>Total:</strong> {formData.total}</p>
+      </div>
     </form>
   );
 };

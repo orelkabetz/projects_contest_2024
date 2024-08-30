@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import ProjectList from '../../ProjectsList'; // Ensure the correct path to ProjectList component
 import { storages } from '../../stores'; // Ensure the correct path to the stores
-import BackButton from '../../BackButton';
+import BackButton from '../../utils/BackButton';
 
 const ViewProjects = observer(() => {
     const { userStorage } = storages;

@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import React, { useState, useEffect } from 'react';
 import CustomCarousel from './Carousel'; // Ensure the correct path to Carousel component
-import SearchBar from './SearchBar'; // Import the SearchBar component
+import SearchBar from './utils/SearchBar'; // Import the SearchBar component
 
 const ProjectList = observer(({ endpoint }) => {
     const [projects, setProjects] = useState([]);

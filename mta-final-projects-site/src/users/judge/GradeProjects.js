@@ -1,33 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 import styled from 'styled-components';
+import Swal from 'sweetalert2'; 
 import { storages } from '../../stores';
-import Post from './Post'; // Import the Post component
-import BackButton from '../../BackButton';
-import SearchBar from '../../SearchBar';
-import ProjectGradingForm from './ProjectGradingForm'; // Adjust the path if necessary
-import './GradeProjects.css';
+import Post from '../../utils/Post'; 
+import BackButton from '../../utils/BackButton';
+import SearchBar from '../../utils/SearchBar';
+import ProjectGradingForm from './ProjectGradingForm';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import JudgeButtons from './JudgeButtons';
 
-const MySwal = withReactContent(Swal);
-
-// Styled components for Feed
 const FeedContainer = styled.div`
-    background-color: #f0f8ff; /* Matches the app container background */
+    background-color: #f0f8ff; 
     padding: 20px;
     max-width: 800px;
     margin: 0 auto;
 `;
 
 const Loader = styled.h4`
-    color: #175a94; /* Matches the title color */
+    color: #175a94; 
     text-align: center;
 `;
 
 const EndMessage = styled.p`
     color: #555;
     text-align: center;
+`;
+
+const StyledCancelButton = styled(Button)`
+  background-color: #d33 !important; /* Dark red */
+  color: white !important;
+  border-radius: 8px !important;
+  padding: 8px 16px !important; /* Make buttons smaller */
+  font-weight: bold !important;
+  margin-top: 8px !important;
+  &:hover {
+    background-color: #c82333 !important; /* Slightly darker red on hover */
+  }
+`;
+
+const StyledSubmitButton = styled(Button)`
+  background-color: #175a94 !important;
+  color: white !important;
+  border-radius: 8px !important;
+  padding: 8px 16px !important; /* Make buttons smaller */
+  font-weight: bold !important;
+  margin-top: 8px !important;
+  &:hover {
+    background-color: #0e3f6d !important;
+  }
+`;
+
+const DialogActionsContainer = styled.div`
+  display: flex;
+  justify-content: center; /* Center the buttons */
+  gap: 16px; /* Add some space between the buttons */
+  margin-top: 16px; /* Space above the buttons */
+  margin-bottom: 16px; /* Space above the buttons */
 `;
 
 const GradeProjects = observer(() => {
@@ -50,8 +83,8 @@ const GradeProjects = observer(() => {
     const [filtersActive, setFiltersActive] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [searchField, setSearchField] = useState('');
+    const [dialogOpen, setDialogOpen] = useState(false); // State to manage dialog visibility
 
-    // Define the fetchProjects function inside the component
     const fetchProjects = async (query = '') => {
         try {
             setLoading(true);
@@ -70,7 +103,7 @@ const GradeProjects = observer(() => {
             setProjects(data.projects);
         } catch (error) {
             console.error('Error fetching projects:', error);
-            MySwal.fire('Error', 'Failed to fetch projects. Please try again.', 'error');
+            Swal.fire('Error', 'Failed to fetch projects. Please try again.', 'error');
         } finally {
             setLoading(false);
         }
@@ -80,173 +113,112 @@ const GradeProjects = observer(() => {
         fetchProjects();
     }, [token]);
 
-    // Handle changes in grading inputs
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        const numericValue = parseInt(value, 10) || 0;
-
-        const updatedFormData = {
-            ...formData,
-            [name]: numericValue,
-        };
-
-        const total =
-            updatedFormData.complexity +
-            updatedFormData.usability +
-            updatedFormData.innovation +
-            updatedFormData.presentation +
-            updatedFormData.proficiency;
-
-        setFormData({
-            ...updatedFormData,
-            total,
-        });
+    const handleOpenDialog = (project) => {
+        setSelectedProject(project);
+        setDialogOpen(true);
     };
 
-    // Handle comment input change
-    const handleCommentChange = (event) => {
-        const { value } = event.target;
-        setFormData({
-            ...formData,
-            additionalComment: value,
-        });
+    const handleCloseDialog = () => {
+        setSelectedProject(null);
+        setDialogOpen(false);
     };
 
-    // Handle form submission
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-
-        const confirmation = await MySwal.fire({
-            title: 'Confirm Submission',
-            text: 'Are you sure you want to submit these grades? This action cannot be undone.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, submit',
-            cancelButtonText: 'Cancel',
-        });
-
-        if (confirmation.isConfirmed) {
-            try {
-                const response = await fetch('http://localhost:3001/judge/submitGrade', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({
-                        projectId: selectedProject._id,
-                        grades: formData,
-                    }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to submit grades');
-                }
-
-                const data = await response.json();
-
-                MySwal.fire('Success', data.message, 'success');
-
-                // Remove the graded project from the list
-                setProjects(projects.filter((project) => project._id !== selectedProject._id));
-                setSelectedProject(null);
-                resetFormData();
-            } catch (error) {
-                console.error('Error submitting grades:', error);
-                MySwal.fire('Error', 'Failed to submit grades. Please try again.', 'error');
-            }
-        }
+    const handleSubmit = async () => {
+        // Placeholder method to handle finish grading action
+        console.log("Submitting form data to backend:", formData);
+        handleCloseDialog();
     };
 
-    // Reset form data to initial state
-    const resetFormData = () => {
-        setFormData({
-            complexity: 10,
-            usability: 10,
-            innovation: 10,
-            presentation: 10,
-            proficiency: 10,
-            additionalComment: '',
-            total: 50,
-        });
-    };
+    const handleCancelClick = () => {
+      // Close the dialog before showing the Swal confirmation
+      setDialogOpen(false); // Hide the dialog
+  
+      Swal.fire({
+          title: 'Are you sure?',
+          text: "You will lose all the unsaved changes.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Yes, cancel it!',
+          cancelButtonText: 'No, keep it',
+      }).then((result) => {
+          if (!result.isConfirmed) {
+              setDialogOpen(true); // Reopen the dialog if the user decides not to cancel
+          }
+      });
+  };
 
-    // Handle search functionality
-    const handleSearchInputChange = (event) => {
-        setSearchTerm(event.target.value);
-    };
-
-    const handleSearchFieldChange = (event) => {
-        setSearchField(event.target.value);
-    };
-
-    const handleSearchButtonClick = (event) => {
-        event.preventDefault();
-        if (searchField && searchTerm) {
-            const query = `?search=${searchTerm}&searchField=${searchField}`;
-            fetchProjects(query);
-            setFiltersActive(true);
-        } else {
-            MySwal.fire('Error', 'Please select a field and enter a search term.', 'error');
-        }
-    };
-
-    const handleClearFilters = () => {
-        setSearchTerm('');
-        setSearchField('');
-        setFiltersActive(false);
-        // Re-fetch all projects without filters
-        fetchProjects();
-    };
-
-    // Render loading state
     if (loading) {
         return <Loader>Loading projects...</Loader>;
     }
 
     return (
         <FeedContainer>
+            <header className="py-6 bg-white text-center border-b border-gray-200">
+                <h3 className="text-blue-700 text-lg">Welcome, {user?.name}! Let's grade some projects.</h3>
+                <JudgeButtons />
+            </header>
             <BackButton route="/judge" />
-            <h2 className="welcome-message">Welcome, {user?.name}! Let's grade some projects.</h2>
-
             <SearchBar
                 searchTerm={searchTerm}
                 searchField={searchField}
-                onSearchInputChange={handleSearchInputChange}
-                onSearchFieldChange={handleSearchFieldChange}
-                onSearchButtonClick={handleSearchButtonClick}
-                onClearFilters={handleClearFilters}
+                onSearchInputChange={(e) => setSearchTerm(e.target.value)}
+                onSearchFieldChange={(e) => setSearchField(e.target.value)}
+                onSearchButtonClick={handleSubmit}
+                onClearFilters={handleCloseDialog}
                 filtersActive={filtersActive}
             />
 
-            {!selectedProject ? (
-                <div className="projects-list">
-                    <h3>Select a Project to Grade:</h3>
-                    {projects.length > 0 ? (
-                        projects.map((project) => (
-                          <Post
-                              key={project._id}
-                              project={project}
-                              onGrade={() => setSelectedProject(project)} // Pass your onGrade function
-                              showGradeButton={true} // Show the Grade button
-                          />
-                      ))
-                    ) : (
-                        <EndMessage>No projects assigned to you at the moment.</EndMessage>
-                    )}
-                </div>
-            ) : (
-                <div className="grading-form">
-                    <h3>Grading: {selectedProject.Title}</h3>
+            <div className="projects-list">
+                <h3>Select a Project to Grade:</h3>
+                {projects.length > 0 ? (
+                    projects.map((project) => (
+                        <Post
+                            key={project._id}
+                            project={project}
+                            onGrade={() => handleOpenDialog(project)}
+                            showGradeButton={true}
+                        />
+                    ))
+                ) : (
+                    <EndMessage>No projects assigned to you at the moment.</EndMessage>
+                )}
+            </div>
+
+            {/* Dialog for grading form */}
+            <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="md">
+                <DialogTitle>Grading: {selectedProject?.Title}</DialogTitle>
+                <DialogContent>
                     <ProjectGradingForm
                         formData={formData}
-                        handleInputChange={handleInputChange}
-                        handleCommentChange={handleCommentChange}
+                        handleSelectChange={(e) => {
+                            const { name, value } = e.target;
+                            setFormData((prevFormData) => ({
+                                ...prevFormData,
+                                [name]: parseInt(value, 10),
+                                total:
+                                    prevFormData.complexity +
+                                    prevFormData.usability +
+                                    prevFormData.innovation +
+                                    prevFormData.presentation +
+                                    prevFormData.proficiency,
+                            }));
+                        }}
+                        handleCommentChange={(e) => setFormData({ ...formData, additionalComment: e.target.value })}
                         handleSubmit={handleSubmit}
-                        handleBack={() => setSelectedProject(null)}
+                        handleCancelClick={handleCancelClick}
                     />
-                </div>
-            )}
+                </DialogContent>
+                <DialogActionsContainer>
+                  <StyledCancelButton onClick={handleCancelClick}>
+                    Cancel
+                  </StyledCancelButton>
+                  <StyledSubmitButton variant="contained" type="submit">
+                    Finish Grading
+                  </StyledSubmitButton>
+                </DialogActionsContainer>
+            </Dialog>
         </FeedContainer>
     );
 });

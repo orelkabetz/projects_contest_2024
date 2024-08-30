@@ -1,6 +1,6 @@
 import React from 'react';
 import Swal from 'sweetalert2';
-import { storages } from './stores';
+import { storages } from '../stores';
 
 const LogoutButton = () => {
     const {userStorage} = storages

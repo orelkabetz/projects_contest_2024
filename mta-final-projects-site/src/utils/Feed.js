@@ -3,7 +3,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import Post from './Post';
 import axios from 'axios';
 import styled from 'styled-components';
-import SearchBar from '../../SearchBar'; // Import SearchBar component
+import SearchBar from './SearchBar'; // Import SearchBar component
 
 // Styled components for Feed
 const FeedContainer = styled.div`

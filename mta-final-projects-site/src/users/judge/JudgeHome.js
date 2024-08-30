@@ -3,7 +3,7 @@ import React from 'react';
 import JudgeButtons from './JudgeButtons';
 import { storages } from '../../stores';
 import { observer } from 'mobx-react-lite';
-import Feed from './Feed';
+import Feed from '../../utils/Feed';
 
 const JudgeHome = observer(() => {
     const { userStorage } = storages;
