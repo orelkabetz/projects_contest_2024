@@ -478,8 +478,8 @@ const ManageJudges = observer(() => {
             </div>
             <div>
                 <h2>Preference Subjects Options</h2>
-                <button onClick={addNewPreference} style={{ marginRight: '10px' }}>Add Preference</button>
-                <button onClick={removePreferences}>Remove Preference</button>
+                <button className="admin-button" onClick={addNewPreference} style={{ marginRight: '10px' }}>Add Preference</button>
+                <button className="admin-button" onClick={removePreferences}>Remove Preference</button>
                 <ExportData url='http://localhost:3001/admin/judges/judgesList' />
             </div>
         </div>

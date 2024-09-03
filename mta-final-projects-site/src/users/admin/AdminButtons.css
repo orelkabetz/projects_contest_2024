@@ -4,7 +4,44 @@
     align-items: center; /* Optional: Center the buttons horizontally */
   }
   
+  .admin-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px; /* Adjusted for some spacing at the top */
+  }
+  
   .admin-button {
-    margin-bottom: 10px; /* Add some spacing between buttons */
+    padding: 12px 24px;
+    background-color: #175a94;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Ensures content is centered */
+  }
+  
+  .admin-button:hover {
+    background-color: #0e3f6d;
+    transform: scale(1.05);
+  }
+  
+  .admin-button:active {
+    background-color: #0c365a;
+    transform: scale(1);
+  }
+  
+  .logout-button {
+    color: red;
+    background-color: transparent;
+  }
+  
+  .logout-button:hover {
+    color: #d33;
   }
   

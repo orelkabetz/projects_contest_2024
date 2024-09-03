@@ -1,0 +1,83 @@
+/* Container styling for the entire profile setup */
+.profile-setup-container {
+  padding: 20px;
+  background-color: #f0f8ff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+/* Header styles */
+.profile-header {
+  padding: 20px;
+  background-color: #ffffff;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
+  border-radius: 8px 8px 0 0;
+}
+
+.profile-header h3 {
+  color: #050e15;
+  margin: 0;
+}
+
+/* Main section titles */
+.profile-setup h2, .profile-setup h3 {
+  font-size: 20px;
+  color: #010910;
+  margin-bottom: 15px;
+}
+
+/* Column layout for buttons */
+.button-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+  align-items: center;
+}
+
+/* Button styles */
+.profile_setup_button {
+  padding: 12px 24px;
+  background-color: #175a94; /* Dark blue color */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Ensure full width up to max-width */
+  max-width: 180px; /* Prevent buttons from being too wide */
+}
+
+.profile_setup_button:hover {
+  background-color: #0e3f6d; /* Slightly darker blue on hover */
+  transform: scale(1.05);
+}
+
+.profile_setup_button:active {
+  background-color: #0c365a; /* Even darker blue when active */
+  transform: scale(1);
+}
+
+/* Back button styling */
+.back-button {
+  padding: 10px 20px;
+  background-color: #ddd;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.back-button:hover {
+  background-color: #ccc;
+}

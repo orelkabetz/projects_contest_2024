@@ -59,33 +59,42 @@ const GradeProjectsFeed = observer(() => {
     const [filtersActive, setFiltersActive] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [searchField, setSearchField] = useState('');
+    const [filterOptions, setFilterOptions] = useState([]);
+
+    // Fetch projects function
+    const fetchProjects = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch('http://localhost:3001/projectsForJudge/projectList', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch projects');
+            }
+
+            const data = await response.json();
+            setProjects(data);
+        } catch (error) {
+            console.error('Error fetching projects:', error);
+            MySwal.fire('Error', 'Failed to fetch projects. Please try again.', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchProjects = async () => {
-            try {
-                setLoading(true);
-                const response = await fetch('http://localhost:3001/projectsForJudge/projectList', {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch projects');
-                }
-
-                const data = await response.json();
-                setProjects(data);
-            } catch (error) {
-                console.error('Error fetching projects:', error);
-                MySwal.fire('Error', 'Failed to fetch projects. Please try again.', 'error');
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchProjects();
+        
+        // Define filter options
+
+        setFilterOptions(options); // Set filter options
+        console.log("running");
+        
+
     }, [token]);
 
     // Handle changes in grading inputs
@@ -119,6 +128,17 @@ const GradeProjectsFeed = observer(() => {
             additionalComment: value,
         });
     };
+    const getFilterOptions = () => [
+        { value: 'name', label: 'Name' },
+        { value: 'Title', label: 'Title' },
+        { value: 'WorkshopName', label: 'Workshop Name' },
+        { value: 'Project Owners', label: 'Project Owners' },
+        { value: 'Lecturer', label: 'Lecturer' },
+        { value: 'StudentName', label: 'Student Name' },
+        { value: 'StudentEmail', label: 'Student Email' },
+        { value: 'StudentPhone', label: 'Student Phone' },
+        { value: 'WorkshopId', label: 'Workshop Id' },
+    ];
 
     // Handle form submission
     const handleSubmit = async (event) => {
@@ -208,15 +228,13 @@ const GradeProjectsFeed = observer(() => {
         setSearchTerm('');
         setSearchField('');
         setFiltersActive(false);
-        // Re-fetch all projects without filters
-        fetchProjects();
+        fetchProjects(); // Re-fetch all projects without filters
     };
 
     // Render loading state
     if (loading) {
         return <Loader>Loading projects...</Loader>;
     }
-
     return (
         <FeedContainer>
             <BackButton route="/judge" />
@@ -230,6 +248,7 @@ const GradeProjectsFeed = observer(() => {
                 onSearchButtonClick={handleSearchButtonClick}
                 onClearFilters={handleClearFilters}
                 filtersActive={filtersActive}
+                filterOptions={getFilterOptions} 
             />
 
             {!selectedProject ? (

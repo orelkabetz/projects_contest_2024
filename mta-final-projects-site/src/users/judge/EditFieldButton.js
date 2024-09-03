@@ -1,5 +1,6 @@
 import React from 'react';
 import Swal from 'sweetalert2';
+import './ProfileSetup.css';
 
 const EditFieldButton = ({ field, user, updateUser }) => {
   const handleEdit = () => {
@@ -30,7 +31,7 @@ const EditFieldButton = ({ field, user, updateUser }) => {
           .then((response) => response.json())
           .then((data) => {
             updateUser(field, newValue); // Update local state
-            Swal.fire('Success', `${field} updated successfully!`, 'success');
+            Swal.fire('Success', `${field} updated successfully to ${newValue}!`, 'success');
           })
           .catch((error) => {
             Swal.fire('Error', 'There was an error updating the information.', 'error');
@@ -40,7 +41,7 @@ const EditFieldButton = ({ field, user, updateUser }) => {
     });
   };
 
-  return <button onClick={handleEdit}>Edit {field}</button>;
+  return <button  className="profile_setup_button" onClick={handleEdit}>Edit {field}</button>;
 };
 
 export default EditFieldButton;

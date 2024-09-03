@@ -67,7 +67,7 @@ const ExportData = observer(({ url }) => {
 
     return (
         <div>
-            <button onClick={handleExportToCsvClick} style={{ marginTop: '20px' }}>
+            <button className="admin-button" onClick={handleExportToCsvClick}>
                 Export Data to CSV
             </button>
         </div>

@@ -10,7 +10,7 @@ const AdminHome = observer(() => {
     };
     return (
         <div>
-            <h1>Admin Dashboard</h1>
+            <h2>Admin Dashboard</h2>
             <AdminButtons /> {/* Add AdminButtons component */}
         </div>
     );

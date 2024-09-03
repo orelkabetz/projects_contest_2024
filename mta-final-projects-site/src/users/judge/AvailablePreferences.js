@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import Swal from 'sweetalert2';
 import ReactDOM from 'react-dom/client';
+import './ProfileSetup.css';
 
 
 const AvailablePreferences = observer(({ token }) => {
@@ -156,7 +157,7 @@ const AvailablePreferences = observer(({ token }) => {
 
   return (
     <div>
-      <button onClick={openPreferencesModal}>Edit Preferences</button>
+      <button className="profile_setup_button" onClick={openPreferencesModal}>Edit Preferences</button>
     </div>
   );
 });
