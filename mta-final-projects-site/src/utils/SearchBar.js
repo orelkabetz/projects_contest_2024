@@ -89,7 +89,7 @@ const SearchBar = ({ searchTerm, searchField, onSearchInputChange, onSearchField
                     type="text"
                     value={searchTerm}
                     onChange={onSearchInputChange}
-                    placeholder="Search projects"
+                    placeholder="Search..."
                 />
                 <Button type="submit">
                     Search

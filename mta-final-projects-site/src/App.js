@@ -10,11 +10,13 @@ import { AdminHome } from './users/admin/admin-homepage';
 import ManageJudges from './users/admin/manage-judges';
 import ManageProjects from './users/admin/manage-projects';
 import AssignProjects from './users/admin/assign-projects';
+import ManageGrades from './users/admin/manage-projects-grades';
 import ExportData from './users/admin/export-data';
 import './App.css';
 import { observer } from 'mobx-react-lite';
 import { storages } from './stores';
 import { FaComments } from 'react-icons/fa';  // Import the chat icon
+
 
 const AdminLayout = observer(() => {
   const navigate = useNavigate();
@@ -102,6 +104,7 @@ const App = observer(() => {
             <Route path="manage-judges" element={<ManageJudges />} />
             <Route path="manage-projects" element={<ManageProjects />} />
             <Route path="assign-projects" element={<AssignProjects />} />
+            <Route path="manage-projects-grades" element={<ManageGrades />} />
             <Route path="export-data" element={<ExportData />} />
           </Route>
         </Routes>
