@@ -8,6 +8,7 @@ import BackButton from '../../utils/BackButton';
 import ExportData from './export-data';
 import SearchBar from '../../utils/SearchBar';
 import GradesTable from './GradesTable'
+import AdminButtons from './AdminButtons';
 
 
 
@@ -58,6 +59,7 @@ const fetchGrades = async () => {
             <GradesTable grades={grades}></GradesTable>
             <BackButton route="/admin" />
         </div>
+        <AdminButtons />
     </div>
 );
 };

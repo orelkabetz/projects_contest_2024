@@ -3,6 +3,7 @@ import React from 'react';
 import ProjectList from '../../ProjectsList'; // Ensure the correct path to ProjectList component
 import BackButton from '../../utils/BackButton';
 import ExportData from './export-data';
+import AdminButtons from './AdminButtons';
 
 const ManageProjects = observer(() => {
     const handleFileUpload = (event) => {
@@ -40,6 +41,7 @@ const ManageProjects = observer(() => {
                 <ProjectList endpoint="http://localhost:3001/admin/projects/projectsList" />
                 <ExportData></ExportData>
             </div>
+            <AdminButtons />
         </div>
     );
 });

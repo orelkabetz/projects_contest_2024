@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import Post from './Post';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -23,38 +22,39 @@ const EndMessage = styled.p`
     text-align: center;
 `;
 
+const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+};
+
 const Feed = () => {
     const [projects, setProjects] = useState([]);
-    const [hasMore, setHasMore] = useState(true);
-    const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [searchField, setSearchField] = useState('');
     const [filtersActive, setFiltersActive] = useState(false);
 
     useEffect(() => {
-        if (!filtersActive) {
-            fetchProjects();
-        }
-    }, [page]);
+        fetchProjects();
+    }, []);
 
     const fetchProjects = async (query = '') => {
         try {
-            const response = await axios.get(`http://localhost:3001/admin/projects/projectsList?page=${page}${query}`);
-            console.log(response.data); // Log the entire response to inspect the structure
-            
-            if (filtersActive) {
-                // If filters are active, show only the filtered results
-                setProjects(response.data);
-                setHasMore(false); // Stop infinite scrolling
-            } else {
-                // Append new projects to the list
-                setProjects(prevProjects => [...prevProjects, ...response.data]);
-                if (response.data.length === 0) {
-                    setHasMore(false); // Stop infinite scrolling if no more projects
-                }
-            }
+            setLoading(true);
+            const response = await axios.get(`http://localhost:3001/admin/projects/projectsList${query}`);
+            let fetchedProjects = response.data;
+
+            // Shuffle the projects array
+            const shuffledProjects = shuffleArray(fetchedProjects);
+
+            setProjects(shuffledProjects);
+            setLoading(false);
         } catch (error) {
             console.error('Error fetching projects:', error);
+            setLoading(false);
         }
     };
 
@@ -69,9 +69,7 @@ const Feed = () => {
     const handleSearchButtonClick = (event) => {
         event.preventDefault();
         if (searchField && searchTerm) {
-            const query = `&search=${searchTerm}&searchField=${searchField}`;
-            setPage(1); // Reset the page for a new search
-            setProjects([]); // Clear previous projects
+            const query = `?search=${searchTerm}&searchField=${searchField}`;
             fetchProjects(query);
             setFiltersActive(true); // Enable filter mode
         } else {
@@ -83,12 +81,13 @@ const Feed = () => {
         event.preventDefault();
         setSearchTerm('');
         setSearchField('');
-        setPage(1); // Reset the page
-        setProjects([]); // Clear previous projects
-        fetchProjects();
+        fetchProjects(); // Fetch all projects without filters
         setFiltersActive(false); // Disable filter mode
-        setHasMore(true); // Re-enable infinite scrolling
     };
+
+    if (loading) {
+        return <Loader>Loading projects...</Loader>;
+    }
 
     return (
         <FeedContainer>
@@ -101,21 +100,18 @@ const Feed = () => {
                 onClearFilters={handleClearFilters}
                 filtersActive={filtersActive}
             />
-            <InfiniteScroll
-                dataLength={projects.length}
-                next={fetchProjects}
-                hasMore={hasMore}
-                loader={<Loader>Loading...</Loader>}
-                endMessage={<EndMessage>No more projects to show</EndMessage>}
-            >
-                {projects.map((project) => (
-                <Post
-                    key={project._id}
-                    project={project}
-                    showGradeButton={false} // Don't show the Grade button
-                />
-            ))}
-            </InfiniteScroll>
+            
+            {projects.length > 0 ? (
+                projects.map((project) => (
+                    <Post
+                        key={project._id}
+                        project={project}
+                        showGradeButton={false} // Don't show the Grade button
+                    />
+                ))
+            ) : (
+                <EndMessage>No projects to show</EndMessage>
+            )}
         </FeedContainer>
     );
 };

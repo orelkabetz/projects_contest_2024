@@ -1,19 +1,20 @@
-// AdminButtons.js
-import React from 'react';
-import './AdminButtons.css'; // Import CSS file for styling
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { saveAs } from 'file-saver'; // For saving the CSV file
 import Papa from 'papaparse'; // For CSV parsing
 import axios from 'axios';
 import ExportData from './export-data';
-import Swal from 'sweetalert2';
 import { storages } from '../../stores';
-
-const { userStorage } = storages;
+import { AiOutlineUser, AiOutlineProject, AiOutlineStar, AiOutlineFileAdd, AiOutlineLogout, AiOutlineMenu } from 'react-icons/ai'; // Import icons
+import Swal from 'sweetalert2';
+import './AdminButtons.css'; // Import CSS file for styling
 
 const AdminButtons = observer(() => {
-  const navigate = useNavigate()
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const { userStorage } = storages;
+
   const handleManageJudgesClick = () => {
     navigate("/admin/manage-judges");
   };
@@ -30,6 +31,45 @@ const AdminButtons = observer(() => {
     navigate("/admin/manage-projects-grades");
   };
 
+  const handleGradesClick = () =>
+  {
+    console.log('Not implemented')
+  }
+
+  const handleExportToCsvClick = async () => {
+    try {
+      console.log("hi");
+      // Fetch all projects
+      const projects = await fetchProjects();
+
+      // Prepare CSV data using PapaParse
+      const csvData = Papa.unparse(projects, {
+        quotes: true, // Enable quotes around fields
+        delimiter: ',', // CSV delimiter
+        header: true, // Include header row based on field names
+      });
+
+      // Create a Blob containing the CSV data
+      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8' });
+
+      // Save the CSV file using FileSaver.js
+      saveAs(blob, 'projects.csv');
+    } catch (error) {
+      console.error('Error exporting to CSV:', error);
+      // Handle error (e.g., show error message to user)
+    }
+  };
+
+  const fetchProjects = async () => {
+    try {
+      const response = await axios.get('/projects/projectsList');
+      return response.data; // Return the fetched projects
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      throw error; // Handle or propagate the error
+    }
+  };
+
   const handleLogout = () => {
     Swal.fire({
       title: 'Confirm Logout',
@@ -44,19 +84,59 @@ const AdminButtons = observer(() => {
     });
   };
 
-
- 
-
-return (
-  <div className="admin-buttons">
-    <button className="admin-button" onClick={handleManageJudgesClick}>Manage Judges</button>
-    <button className="admin-button" onClick={handleManageProjectsClick}>Manage Projects</button>
-    <button className="admin-button" onClick={handleAssignProjectsClick}>Assign Projects</button>
-    <button className="admin-button" onClick={handleManageProjectsGradesClick}>Manage Projects Grades</button>
-    <ExportData url='http://localhost:3001/admin/projects/projectsList' />
-    <button className="admin-button logout-button" onClick={handleLogout}>Logout</button>
+  return (
+    <div style={{ position: 'relative' }}>
+      <div 
+        style={{ cursor: 'pointer', position: 'fixed', top: '20px', left: '20px', zIndex: 1000 }}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <AiOutlineMenu size={24} />
+      </div>
+      <div
+        className={`side-menu ${isOpen ? 'open' : ''}`} // Toggle open/close class
+        style={{
+          position: 'fixed',
+          top: '0',
+          left: isOpen ? '0' : '-300px',
+          width: '250px',
+          height: '100%',
+          backgroundColor: 'rgba(240, 248, 255, 0.9)', // Light blue with 90% opacity
+          padding: '20px',
+          boxShadow: '2px 0px 5px rgba(0, 0, 0, 0.1)',
+          zIndex: 999,
+          transition: 'left 0.3s ease',
+        }}
+      >
+       <div className="admin-buttons">
+  <div className="admin-button" onClick={handleManageJudgesClick}>
+    Manage Judges
+    <AiOutlineUser size={20} style={{ marginLeft: '10px' }} />
   </div>
-);
+  <div className="admin-button" onClick={handleManageProjectsClick}>
+    Manage Projects
+    <AiOutlineProject size={20} style={{ marginLeft: '10px' }} />
+  </div>
+  <div className="admin-button" onClick={handleAssignProjectsClick}>
+    Assign Projects
+    <AiOutlineFileAdd size={20} style={{ marginLeft: '10px' }} />
+  </div>
+  <div className="admin-button" onClick={handleManageProjectsGradesClick}>
+    Manage Projects Grades
+    <AiOutlineStar size={20} style={{ marginLeft: '10x' }} />
+  </div>
+  <div className="admin-button" onClick={handleExportToCsvClick}>
+    Export Projects to CSV
+    <AiOutlineFileAdd size={20} style={{ marginLeft: '10px' }} />
+  </div>
+  <div className="admin-button logout-button" onClick={handleLogout} style={{ marginTop: 'auto' }}>
+    Logout
+    <AiOutlineLogout size={20} style={{ marginLeft: '10px' }} />
+  </div>
+</div>
+
+      </div>
+    </div>
+  );
 });
 
 export default AdminButtons;

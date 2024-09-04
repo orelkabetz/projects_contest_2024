@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import ReactDOM from 'react-dom/client';
 import BackButton from '../../utils/BackButton';
 import ExportData from './export-data';
+import AdminButtons from './AdminButtons';
 
 
 const ManageJudges = observer(() => {
@@ -482,6 +483,7 @@ const ManageJudges = observer(() => {
                 <button className="admin-button" onClick={removePreferences}>Remove Preference</button>
                 <ExportData url='http://localhost:3001/admin/judges/judgesList' />
             </div>
+            <AdminButtons />
         </div>
     );
 });
