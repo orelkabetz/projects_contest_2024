@@ -5,10 +5,10 @@ const gradeSchema = new mongoose.Schema({
   project_id: { type: Number, required: true },
   judge_id: { type: Number, required: true },
   complexity: { type: Number, required: true },
-  usabilty: { type: Number, required: true },
+  usability: { type: Number, required: true },
   innovation: { type: Number, required: true },
   presentation: { type: Number, required: true },
-  proficency: { type: Number, required: true },
+  proficiency: { type: Number, required: true },
   additionalComment: { type: String, default: '' },
   grade: { type: Number, required: true },
 }, { timestamps: true });
