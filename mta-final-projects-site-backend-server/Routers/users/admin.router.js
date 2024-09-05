@@ -30,7 +30,7 @@ getCollections()
 
     router.get('/judges/judgesList', async (req, res) => {
       try {
-        const judges = await collections.users.find({}, { projection: { name: 1, ID: 1} }).toArray();
+        const judges = await collections.users.find({type: 'judge'}, { projection: { name: 1, ID: 1} }).toArray();
         res.json(judges);
       } catch (error) {
         console.error('Error fetching judges:', error);
@@ -127,6 +127,52 @@ router.get('/preferences', async (req, res) => {
       res.status(500).json({ error: 'An error occurred while removing the preferences' });
     }
   });
+
+  router.get('/grades', async (req, res) => {
+    try {
+        // const token = req.headers.authorization.split(' ')[1];
+        // const user = await usersService.checkToken(token); 
+        // if (!user) {
+        //     return res.status(401).json({ error: 'Unauthorized' });
+        // }
+
+        const gradesList = await collections.grades.find({}).toArray();
+        res.json({'grades': gradesList});
+    } catch (error) {
+        console.error('Error fetching grades:', error);
+        res.status(500).json({ error: 'An error occurred while fetching grades' });
+    }
+  });
+
+  router.get('/judgesProjectsMaps', async (req, res) => {
+    try {
+        // Fetch all users of type 'judge'
+        const judges = await collections.users.find({ 'type': 'judge' }).toArray();
+
+        // Create the judge_id: judge_name dictionary
+        const judgeDict = {};
+        judges.forEach(judge => {
+            judgeDict[judge.ID] = judge.name;
+        });
+
+        // Fetch all projects
+        const projects = await collections.project_schemas.find({}).toArray();
+
+        // Create the project_id: project_name dictionary
+        const projectDict = {};
+        projects.forEach(project => {
+            projectDict[project.ProjectNumber] = project.Title;
+        });
+
+        // Return both dictionaries in the response
+        res.json({ judges: judgeDict, projects: projectDict });
+    } catch (error) {
+        console.error('Error fetching judge and project maps:', error);
+        res.status(500).json({ error: 'An error occurred while fetching data' });
+    }
+  });
+
+
   })
   .catch((err) => {
     console.error('Error getting collections:', err);

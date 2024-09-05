@@ -286,9 +286,7 @@ getCollections()
           grade: totalGrade,
         });
 
-        // Save the grade to the database
         await collections.grades.insertOne(newGrade);
-
         res.status(201).json({ message: 'Grade submitted successfully.' });
       } catch (error) {
         console.error('Error submitting grade:', error);
