@@ -1,0 +1,40 @@
+/* Mobile-friendly styles for ManageGrades page */
+.manage-grades-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+    background-color: #f8f8f8;
+}
+
+.grades-manager-table {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.grades-manager-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.grades-manager-table th, .grades-manager-table td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+/* For small screens (phones, tablets) */
+@media (max-width: 600px) {
+    .manage-grades-container {
+        padding: 10px;
+    }
+
+    .grades-manager-table th, .grades-manager-table td {
+        padding: 5px;
+        font-size: 14px;
+    }
+
+    .grades-manager-table table {
+        width: 100%;
+    }
+}

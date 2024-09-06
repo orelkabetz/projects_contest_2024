@@ -5,6 +5,7 @@ import GradesManager from './GradesTable'; // Updated from GradesTable
 import BackButton from '../../utils/BackButton';
 import AdminButtons from './AdminButtons';
 import GradesSearchBar from './GradesSearchBar'; // Import the custom search bar
+import './ManageGrades.css';
 
 const ManageGrades = () => {
     const [grades, setGrades] = useState([]);
@@ -95,7 +96,7 @@ const ManageGrades = () => {
     }
 
     return (
-        <div>
+        <div className="manage-grades-container">
             <h2>Manage Grades</h2>
             <GradesSearchBar
                 searchTerm={searchTerm}
@@ -106,7 +107,9 @@ const ManageGrades = () => {
                 onClearFilters={handleClearFilters}
                 filtersActive={filtersActive}
             />
-            <GradesManager grades={filteredGrades} /> {/* Display filtered grades */}
+            <div className="grades-manager-table">
+                <GradesManager grades={filteredGrades} /> {/* Display filtered grades */}
+            </div>
             <BackButton route="/admin" />
             <AdminButtons />
         </div>
