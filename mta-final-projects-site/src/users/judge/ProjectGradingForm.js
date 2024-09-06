@@ -20,17 +20,29 @@ const StyledFormControl = styled(FormControl)`
     padding: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
+
+  /* Make the form field full width on mobile devices */
+  @media (max-width: 768px) {
+    .MuiInputBase-root {
+      width: 100%;
+    }
+  }
 `;
 
 const StyledButton = styled(Button)`
   background-color: #175a94 !important;
   color: white !important;
   border-radius: 8px !important;
-  padding: 9px 18px !important; /* Reduced padding by 25% */
+  padding: 9px 18px !important;
   font-weight: bold !important;
   margin-top: 16px !important;
   &:hover {
     background-color: #0e3f6d !important;
+  }
+
+  /* Full width on mobile devices */
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 
@@ -40,10 +52,15 @@ const BackButton = styled(Button)`
   display: flex;
   align-items: center;
   margin-bottom: 20px;
-  padding: 9px 18px; /* Reduced padding by 25% */
+  padding: 9px 18px;
   &:hover {
     color: #0e3f6d;
     background-color: transparent;
+  }
+
+  /* Full width on mobile devices */
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 
@@ -91,11 +108,6 @@ const ProjectGradingForm = ({ formData, handleSelectChange, handleCommentChange,
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-      {/* <BackButton onClick={handleCancelClick}>
-        <AiOutlineArrowLeft size={20} style={{ marginRight: '8px' }} />
-        Cancel
-      </BackButton>
-       */}
       {['complexity', 'usability', 'innovation', 'presentation', 'proficiency'].map((field) => (
         <StyledFormControl fullWidth key={field} margin="normal">
           <InputLabel id={`${field}-label`}>

@@ -15,33 +15,60 @@ import Button from '@mui/material/Button';
 import JudgeButtons from './JudgeButtons';
 import { backendURL } from '../../config';
 
+// Initial form data state
+const initialFormData = {
+    complexity: 10,
+    usability: 10,
+    innovation: 10,
+    presentation: 10,
+    proficiency: 10,
+    additionalComment: '',
+    total: 50,
+};
 
+// Styled components for the FeedContainer
 const FeedContainer = styled.div`
     background-color: #f0f8ff; 
     padding: 20px;
     max-width: 800px;
     margin: 0 auto;
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        padding: 15px;
+        max-width: 100%;
+    }
 `;
 
 const Loader = styled.h4`
     color: #175a94; 
     text-align: center;
+
+    /* Adjust font size for mobile */
+    @media (max-width: 768px) {
+        font-size: 16px;
+    }
 `;
 
 const EndMessage = styled.p`
     color: #555;
     text-align: center;
+
+    /* Adjust font size for mobile */
+    @media (max-width: 768px) {
+        font-size: 14px;
+    }
 `;
 
 const StyledCancelButton = styled(Button)`
-  background-color: #d33 !important; /* Dark red */
+  background-color: #d33 !important;
   color: white !important;
   border-radius: 8px !important;
-  padding: 8px 16px !important; /* Make buttons smaller */
+  padding: 8px 16px !important;
   font-weight: bold !important;
   margin-top: 8px !important;
   &:hover {
-    background-color: #c82333 !important; /* Slightly darker red on hover */
+    background-color: #c82333 !important;
   }
 `;
 
@@ -49,20 +76,22 @@ const StyledSubmitButton = styled(Button)`
   background-color: #175a94 !important;
   color: white !important;
   border-radius: 8px !important;
-  padding: 8px 16px !important; /* Make buttons smaller */
+  padding: 8px 16px !important;
   font-weight: bold !important;
   margin-top: 8px !important;
   &:hover {
     background-color: #0e3f6d !important;
   }
+  }
 `;
 
 const DialogActionsContainer = styled.div`
   display: flex;
-  justify-content: center; /* Center the buttons */
-  gap: 16px; /* Add some space between the buttons */
-  margin-top: 16px; /* Space above the buttons */
-  margin-bottom: 16px; /* Space above the buttons */
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  }
 `;
 
 const GradeProjects = observer(() => {
@@ -72,20 +101,12 @@ const GradeProjects = observer(() => {
 
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState(null);
-    const [formData, setFormData] = useState({
-        complexity: 10,
-        usability: 10,
-        innovation: 10,
-        presentation: 10,
-        proficiency: 10,
-        additionalComment: '',
-        total: 50,
-    });
+    const [formData, setFormData] = useState(initialFormData);  // Use initial state
     const [loading, setLoading] = useState(true);
     const [filtersActive, setFiltersActive] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [searchField, setSearchField] = useState('');
-    const [dialogOpen, setDialogOpen] = useState(false); // State to manage dialog visibility
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     const fetchProjects = async (query = '') => {
         try {
@@ -117,71 +138,63 @@ const GradeProjects = observer(() => {
 
     const handleOpenDialog = (project) => {
         setSelectedProject(project);
+        setFormData(initialFormData);  // Reset form data to initial values when opening dialog
         setDialogOpen(true);
     };
 
     const handleCloseDialog = () => {
         setSelectedProject(null);
         setDialogOpen(false);
+        setFormData(initialFormData);  // Reset form data on close
     };
 
     const handleSubmit = async () => {
-      try {
-          // Construct the query string with the token and project ID
-          const token = localStorage.getItem('token');
-          const query = `?token=${token}&projectId=${selectedProject.ProjectNumber}`;
-          
-          // Prepare the request body with the formData
-          const response = await fetch(`${backendURL}/gradeProject${query}`, {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify(formData),
-          });
-  
-          // Handle the response
-          if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.message || 'Failed to submit grades');
-          }
-  
-          // If the submission is successful
-          const data = await response.json();
-          console.log('Submission successful:', data.message);
-  
-          // Close the dialog after successful submission
-          handleCloseDialog();
-  
-          // Optionally, you can refresh the projects list or perform other actions
-      } catch (error) {
-          console.error('Error submitting grades:', error.message);
-          // Show the error to the user using an alert or notification
-          Swal.fire('Error', error.message, 'error');
-      }
-  };
-  
+        try {
+            const token = localStorage.getItem('token');
+            const query = `?token=${token}&projectId=${selectedProject.ProjectNumber}`;
+
+            const response = await fetch(`${backendURL}/gradeProject${query}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to submit grades');
+            }
+
+            const data = await response.json();
+            console.log('Submission successful:', data.message);
+
+            handleCloseDialog();  // Close dialog after successful submission
+        } catch (error) {
+            console.error('Error submitting grades:', error.message);
+            Swal.fire('Error', error.message, 'error');
+        }
+    };
 
     const handleCancelClick = () => {
-      // Close the dialog before showing the Swal confirmation
-      setDialogOpen(false); // Hide the dialog
-  
-      Swal.fire({
-          title: 'Are you sure?',
-          text: "You will lose all the unsaved changes.",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#d33',
-          cancelButtonColor: '#3085d6',
-          confirmButtonText: 'Yes, cancel it!',
-          cancelButtonText: 'No, keep it',
-      }).then((result) => {
-          if (!result.isConfirmed) {
-              setDialogOpen(true); // Reopen the dialog if the user decides not to cancel
-          }
-      });
-  };
+        setDialogOpen(false);  // Close the dialog before showing the Swal confirmation
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You will lose all the unsaved changes.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, cancel it!',
+            cancelButtonText: 'No, keep it',
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                setDialogOpen(true);  // Reopen the dialog if the user decides not to cancel
+            }
+        });
+    };
 
     if (loading) {
         return <Loader>Loading projects...</Loader>;
@@ -220,7 +233,6 @@ const GradeProjects = observer(() => {
                 )}
             </div>
 
-            {/* Dialog for grading form */}
             <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="md">
                 <DialogTitle>Grading: {selectedProject?.Title}</DialogTitle>
                 <DialogContent>

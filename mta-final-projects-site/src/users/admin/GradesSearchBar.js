@@ -7,6 +7,11 @@ const SearchContainer = styled.div`
     max-width: 800px;
     margin: 0 auto;
     padding: 10px 0;
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        padding: 5px;
+    }
 `;
 
 const SearchInputContainer = styled.div`
@@ -14,6 +19,12 @@ const SearchInputContainer = styled.div`
     align-items: center;
     justify-content: center;
     gap: 10px;
+
+    /* Stack elements vertically on smaller screens */
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 5px;
+    }
 `;
 
 const SearchSelect = styled.select`
@@ -27,6 +38,11 @@ const SearchSelect = styled.select`
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     &:hover {
         background-color: #e1f0ff;
+    }
+
+    /* Full width on mobile */
+    @media (max-width: 768px) {
+        width: 50%;
     }
 `;
 
@@ -42,6 +58,11 @@ const SearchInput = styled.input`
     &:hover {
         background-color: #e1f0ff;
     }
+
+    /* Full width on mobile */
+    @media (max-width: 768px) {
+        width: 50%;
+    }
 `;
 
 const SearchButton = styled.button`
@@ -54,8 +75,14 @@ const SearchButton = styled.button`
     transition: background-color 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     font-size: 16px;
+
     &:hover {
         background-color: #0e3f6d;
+    }
+
+    /* Full width on mobile */
+    @media (max-width: 768px) {
+        width: 50%;
     }
 `;
 
@@ -63,6 +90,11 @@ const ClearButton = styled(SearchButton)`
     background-color: #dc3545;
     &:hover {
         background-color: #c82333;
+    }
+
+    /* Full width on mobile */
+    @media (max-width: 768px) {
+        width: 50%;
     }
 `;
 

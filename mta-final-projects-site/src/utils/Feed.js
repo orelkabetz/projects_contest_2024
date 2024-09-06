@@ -7,20 +7,38 @@ import { backendURL } from '../../src/config';
 
 // Styled components for Feed
 const FeedContainer = styled.div`
-    background-color: #f0f8ff; /* Matches the app container background */
+    background-color: #f0f8ff;
     padding: 20px;
     max-width: 800px;
     margin: 0 auto;
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        padding: 15px;
+        max-width: 100%; /* Full width on smaller screens */
+    }
 `;
 
 const Loader = styled.h4`
-    color: #175a94; /* Matches the title color */
+    color: #175a94;
     text-align: center;
+    font-size: 18px;
+
+    /* Adjust font size for mobile */
+    @media (max-width: 768px) {
+        font-size: 16px;
+    }
 `;
 
 const EndMessage = styled.p`
     color: #555;
     text-align: center;
+    font-size: 16px;
+
+    /* Adjust font size for mobile */
+    @media (max-width: 768px) {
+        font-size: 14px;
+    }
 `;
 
 const shuffleArray = (array) => {
