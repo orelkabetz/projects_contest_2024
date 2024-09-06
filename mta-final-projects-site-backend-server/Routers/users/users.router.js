@@ -218,7 +218,11 @@ getCollections()
         const projectIds = [];
         for (const obj of matchingProjectjudgesGroups) {
           if (obj.project_ids && Array.isArray(obj.project_ids)) {
-            projectIds.push(...obj.project_ids);
+            obj.project_ids.forEach((projectId) => {
+              if (!projectIds.includes(projectId)) {
+                projectIds.push(projectId);  // Only push if not already exists
+              }
+            });
           }
         }
     

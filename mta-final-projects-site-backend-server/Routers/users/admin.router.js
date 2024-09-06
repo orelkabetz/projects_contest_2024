@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { usersSerivce } = require('./users.service');
 const { getCollections } = require('../../DB/index');
 
 getCollections()
@@ -122,7 +123,7 @@ router.get('/preferences', async (req, res) => {
     try {
       const result = await collections.available_preferences.deleteMany({ ID: { $in: preferences } });
       res.json(result);
-    } catch (error) {
+    } catch (error) {s
       console.error('Error removing preferences:', error);
       res.status(500).json({ error: 'An error occurred while removing the preferences' });
     }
@@ -130,17 +131,62 @@ router.get('/preferences', async (req, res) => {
 
   router.get('/grades', async (req, res) => {
     try {
-        // const token = req.headers.authorization.split(' ')[1];
-        // const user = await usersService.checkToken(token); 
-        // if (!user) {
-        //     return res.status(401).json({ error: 'Unauthorized' });
-        // }
+        const token = req.headers.authorization.split(' ')[1];
+        const user = await usersSerivce.checkToken(token); 
+        if (!user) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
 
         const gradesList = await collections.grades.find({}).toArray();
         res.json({'grades': gradesList});
     } catch (error) {
         console.error('Error fetching grades:', error);
         res.status(500).json({ error: 'An error occurred while fetching grades' });
+    }
+  });
+
+  const ProjectsJudgesGroup = require('../../DB/entities/projects_judges_group.entity'); // Path to your model
+
+  router.post('/assignProjects', async (req, res) => {
+    try {
+      // Extract token and verify the user
+      const token = req.headers.authorization.split(' ')[1];
+      const user = await usersSerivce.checkToken(token);
+      
+      if (!user || user.type !== 'admin') {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+  
+      // Extract judgeIds and projectIds from request body
+      const { judgeIds, projectIds } = req.body;
+
+      if (!judgeIds || !projectIds || judgeIds.length === 0 || projectIds.length === 0) {
+        return res.status(400).json({ error: 'Both judges and projects must be selected.' });
+      }
+  
+      // Check if the combination of judgeIds and projectIds already exists
+      // const existingGroup = await ProjectsJudgesGroup.findOne({
+      //   judge_ids: { $in: judgeIds },
+      //   project_ids: { $in: projectIds }
+      // });
+  
+      // if (existingGroup) {
+      //   return res.status(400).json({ error: 'Some of the projects have already been assigned to these judges.' });
+      // }
+  
+      // Create a new entry in projects_judges_group
+      const newAssignment = new ProjectsJudgesGroup({
+        judge_ids: judgeIds,
+        project_ids: projectIds
+      });
+  
+      await newAssignment.save(); // Save the new assignment to MongoDB
+  
+      // Return success response
+      res.status(200).json({ message: 'Projects successfully assigned to judges.' });
+    } catch (error) {
+      console.error('Error assigning projects:', error);
+      res.status(500).json({ error: 'An error occurred while assigning projects.' });
     }
   });
 

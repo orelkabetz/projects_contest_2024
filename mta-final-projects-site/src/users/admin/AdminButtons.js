@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { saveAs } from 'file-saver'; // For saving the CSV file
@@ -12,6 +12,7 @@ import './AdminButtons.css'; // Import CSS file for styling
 
 const AdminButtons = observer(() => {
   const [isOpen, setIsOpen] = useState(false);
+  const sidebarRef = useRef(null);
   const navigate = useNavigate();
   const { userStorage } = storages;
 
@@ -31,10 +32,9 @@ const AdminButtons = observer(() => {
     navigate("/admin/manage-projects-grades");
   };
 
-  const handleGradesClick = () =>
-  {
-    console.log('Not implemented')
-  }
+  const handleGradesClick = () => {
+    console.log('Not implemented');
+  };
 
   const handleExportToCsvClick = async () => {
     try {
@@ -84,6 +84,20 @@ const AdminButtons = observer(() => {
     });
   };
 
+  // Handle clicks outside the sidebar
+  const handleClickOutside = (event) => {
+    if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+      setIsOpen(false); // Close sidebar if clicked outside
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside); // Cleanup listener on unmount
+    };
+  }, []);
+
   return (
     <div style={{ position: 'relative' }}>
       <div 
@@ -93,6 +107,7 @@ const AdminButtons = observer(() => {
         <AiOutlineMenu size={24} />
       </div>
       <div
+        ref={sidebarRef} // Add ref to the sidebar for outside click detection
         className={`side-menu ${isOpen ? 'open' : ''}`} // Toggle open/close class
         style={{
           position: 'fixed',
@@ -107,33 +122,32 @@ const AdminButtons = observer(() => {
           transition: 'left 0.3s ease',
         }}
       >
-       <div className="admin-buttons">
-  <div className="admin-button" onClick={handleManageJudgesClick}>
-    Manage Judges
-    <AiOutlineUser size={20} style={{ marginLeft: '10px' }} />
-  </div>
-  <div className="admin-button" onClick={handleManageProjectsClick}>
-    Manage Projects
-    <AiOutlineProject size={20} style={{ marginLeft: '10px' }} />
-  </div>
-  <div className="admin-button" onClick={handleAssignProjectsClick}>
-    Assign Projects
-    <AiOutlineFileAdd size={20} style={{ marginLeft: '10px' }} />
-  </div>
-  <div className="admin-button" onClick={handleManageProjectsGradesClick}>
-    Manage Projects Grades
-    <AiOutlineStar size={20} style={{ marginLeft: '10x' }} />
-  </div>
-  <div className="admin-button" onClick={handleExportToCsvClick}>
-    Export Projects to CSV
-    <AiOutlineFileAdd size={20} style={{ marginLeft: '10px' }} />
-  </div>
-  <div className="admin-button logout-button" onClick={handleLogout} style={{ marginTop: 'auto' }}>
-    Logout
-    <AiOutlineLogout size={20} style={{ marginLeft: '10px' }} />
-  </div>
-</div>
-
+        <div className="admin-buttons">
+          <div className="admin-button" onClick={handleManageJudgesClick}>
+            Manage Judges
+            <AiOutlineUser size={20} style={{ marginLeft: '10px' }} />
+          </div>
+          <div className="admin-button" onClick={handleManageProjectsClick}>
+            Manage Projects
+            <AiOutlineProject size={20} style={{ marginLeft: '10px' }} />
+          </div>
+          <div className="admin-button" onClick={handleAssignProjectsClick}>
+            Assign Projects
+            <AiOutlineFileAdd size={20} style={{ marginLeft: '10px' }} />
+          </div>
+          <div className="admin-button" onClick={handleManageProjectsGradesClick}>
+            Manage Projects Grades
+            <AiOutlineStar size={20} style={{ marginLeft: '10px' }} />
+          </div>
+          <div className="admin-button" onClick={handleExportToCsvClick}>
+            Export Projects to CSV
+            <AiOutlineFileAdd size={20} style={{ marginLeft: '10px' }} />
+          </div>
+          <div className="admin-button logout-button" onClick={handleLogout} style={{ marginTop: 'auto' }}>
+            Logout
+            <AiOutlineLogout size={20} style={{ marginLeft: '10px' }} />
+          </div>
+        </div>
       </div>
     </div>
   );
