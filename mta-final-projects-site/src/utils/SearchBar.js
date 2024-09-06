@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-// Styled components to match the shadcn aesthetic with your color scheme
+// Styled components for the search bar with mobile responsiveness
 const FormContainer = styled.form`
     width: 100%;
     max-width: 800px;
@@ -14,6 +14,12 @@ const InputContainer = styled.div`
     align-items: center;
     justify-content: center;
     gap: 10px;
+
+    /* Make the form stack vertically on smaller screens */
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 5px;
+    }
 `;
 
 const SelectField = styled.select`
@@ -29,6 +35,11 @@ const SelectField = styled.select`
     &:hover {
         background-color: #e1f0ff;
     }
+
+    /* Adjust size for mobile */
+    @media (max-width: 768px) {
+        width: 50%;
+    }
 `;
 
 const InputField = styled.input`
@@ -43,6 +54,11 @@ const InputField = styled.input`
     transition: background-color 0.3s ease;
     &:hover {
         background-color: #e1f0ff;
+    }
+
+    /* Adjust size for mobile */
+    @media (max-width: 768px) {
+        width: 50%;
     }
 `;
 
@@ -60,12 +76,22 @@ const Button = styled.button`
     &:hover {
         background-color: #0e3f6d;
     }
+
+    /* Full width on mobile */
+    @media (max-width: 768px) {
+        width: 50%;
+    }
 `;
 
 const ClearButton = styled(Button)`
     background-color: #dc3545;
     &:hover {
         background-color: #c82333;
+    }
+
+    /* Full width on mobile */
+    @media (max-width: 768px) {
+        width: 50%;
     }
 `;
 

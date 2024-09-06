@@ -34,7 +34,6 @@ const ManageGrades = () => {
     const fetchGrades = async () => {
         try {
             setLoading(true);
-            backendURL
             const response = await fetch(`${backendURL}/admin/grades`, {
                 headers: {
                     'Content-Type': 'application/json',
