@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import Swal from 'sweetalert2';
 import ReactDOM from 'react-dom/client';
 import './ProfileSetup.css';
+import { backendURL } from '../../config';
 
 
 const AvailablePreferences = observer(({ token }) => {
@@ -16,7 +17,7 @@ const AvailablePreferences = observer(({ token }) => {
 
   const fetchPreferences = async () => {
     try {
-      const response = await fetch('http://localhost:3001/preferences');
+      const response = await fetch(`${backendURL}/preferences`);
       const data = await response.json();
       if (Array.isArray(data)) {
         setPreferences(data);
@@ -30,7 +31,7 @@ const AvailablePreferences = observer(({ token }) => {
 
   const fetchUserPreferences = async () => {
     try {
-      const response = await fetch('http://localhost:3001/preferences/user', {
+      const response = await fetch(`${backendURL}/preferences/user`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -139,7 +140,7 @@ const AvailablePreferences = observer(({ token }) => {
 
   const handlePreferenceChange = async (preferenceId, isAdding) => {
     try {
-      const url = isAdding ? 'http://localhost:3001/preferences/add' : 'http://localhost:3001/preferences/remove';
+      const url = isAdding ? `${backendURL}/preferences/add` : `${backendURL}/preferences/remove`;
       const response = await fetch(url, {
         method: 'POST',
         headers: {

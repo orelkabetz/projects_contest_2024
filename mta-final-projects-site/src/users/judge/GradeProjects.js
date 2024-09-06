@@ -13,6 +13,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import JudgeButtons from './JudgeButtons';
+import { backendURL } from '../../config';
+
 
 const FeedContainer = styled.div`
     background-color: #f0f8ff; 
@@ -88,7 +90,7 @@ const GradeProjects = observer(() => {
     const fetchProjects = async (query = '') => {
         try {
             setLoading(true);
-            const response = await fetch(`http://localhost:3001/projectsForJudge/projectList${query}`, {
+            const response = await fetch(`${backendURL}/projectsForJudge/projectList${query}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -130,7 +132,7 @@ const GradeProjects = observer(() => {
           const query = `?token=${token}&projectId=${selectedProject.ProjectNumber}`;
           
           // Prepare the request body with the formData
-          const response = await fetch(`http://localhost:3001/gradeProject${query}`, {
+          const response = await fetch(`${backendURL}/gradeProject${query}`, {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',

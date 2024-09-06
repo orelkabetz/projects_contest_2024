@@ -1,4 +1,6 @@
 import {makeAutoObservable, observable} from "mobx"
+import { backendURL } from '../../src/config';
+
 
 class UserStorage {
   /**
@@ -12,7 +14,7 @@ class UserStorage {
   }
 
   async getDataFromToken(token) {
-    const res = await fetch('http://localhost:3001/check-token', {
+    const res = await fetch(`${backendURL}/check-token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

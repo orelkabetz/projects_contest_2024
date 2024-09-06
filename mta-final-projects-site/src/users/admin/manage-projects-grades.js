@@ -1,3 +1,4 @@
+import { backendURL } from '../../config';
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import Swal from 'sweetalert2'; 
@@ -33,7 +34,8 @@ const ManageGrades = () => {
     const fetchGrades = async () => {
         try {
             setLoading(true);
-            const response = await fetch('http://localhost:3001/admin/grades', {
+            backendURL
+            const response = await fetch(`${backendURL}/admin/grades`, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,

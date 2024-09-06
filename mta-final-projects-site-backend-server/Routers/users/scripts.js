@@ -4,6 +4,8 @@ const Grade = require('../../DB/entities/grade.entity'); // Ensure this is the c
 const axios = require('axios');
 const fs = require('fs');
 const FormData = require('form-data');
+import { backendURL } from '../../';
+
 
 // Function to upload the projects CSV file
 async function uploadProjectsCSV(filePath) {
@@ -13,7 +15,7 @@ async function uploadProjectsCSV(filePath) {
     form.append('file', fs.createReadStream(filePath));
 
     // Make the POST request to the /projects endpoint
-    const response = await axios.post('http://localhost:3001/uploads/projects', form, {
+    const response = await axios.post(`${backendURL}/uploads/projects`, form, {
       headers: {
         ...form.getHeaders(),
       },

@@ -8,6 +8,8 @@ import ProjectGradingForm from './ProjectGradingForm';
 import BackButton from '../../BackButton';
 import SearchBar from '../../SearchBar'; // Import SearchBar component
 import './GradeProjects.css';
+import { backendURL } from '../../config';
+
 
 const MySwal = withReactContent(Swal);
 
@@ -65,7 +67,7 @@ const GradeProjectsFeed = observer(() => {
     const fetchProjects = async () => {
         try {
             setLoading(true);
-            const response = await fetch('http://localhost:3001/projectsForJudge/projectList', {
+            const response = await fetch(`${backendURL}/projectsForJudge/projectList`, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -155,7 +157,7 @@ const GradeProjectsFeed = observer(() => {
 
         if (confirmation.isConfirmed) {
             try {
-                const response = await fetch('http://localhost:3001/judge/submitGrade', {
+                const response = await fetch(`${backendURL}/judge/submitGrade`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
