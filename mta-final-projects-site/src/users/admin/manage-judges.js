@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom/client';
 import BackButton from '../../utils/BackButton';
 import ExportData from './export-data';
 import AdminButtons from './AdminButtons';
+import { backendURL } from '../../config';
 
 
 const ManageJudges = observer(() => {
@@ -22,7 +23,7 @@ const ManageJudges = observer(() => {
             const formData = new FormData();
             formData.append('file', file);
     
-            fetch('http://localhost:3001/upload/potential_users', {
+            fetch(`${backendURL}/upload/potential_users`, {
                 method: 'POST',
                 body: formData,
             })
@@ -41,7 +42,7 @@ const ManageJudges = observer(() => {
 
     // Function to fetch judges data from the database
     const fetchJudges = () => {
-        fetch('http://localhost:3001/admin/judges/judgesList')
+        fetch(`${backendURL}/admin/judges/judgesList`)
             .then(response => response.json())
             .then(data => {
                 setJudges(data);
@@ -52,7 +53,7 @@ const ManageJudges = observer(() => {
     };
 
     const fetchPotentialJudges = () => {
-        return fetch('http://localhost:3001/admin/judges/potentialJudgesList')
+        return fetch(`${backendURL}/admin/judges/potentialJudgesList`)
             .then(response => response.json())
             .then(data => {
                 setPotentialJudges(data);
@@ -65,7 +66,7 @@ const ManageJudges = observer(() => {
     // Function to remove selected IDs from the database
     const removeSelectedIds = (selectedPotentialJudges) => {
         const potentialUserIds = selectedPotentialJudges;
-        fetch('http://localhost:3001/admin/judges/remove-ids', {
+        fetch(`${backendURL}/admin/judges/remove-ids`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -86,7 +87,7 @@ const ManageJudges = observer(() => {
     // Function to remove selected users from the database
     const removeSelectedUsers = (selectedJudges) => {
         const userIds = selectedJudges;
-        fetch('http://localhost:3001/admin/judges/remove-users', {
+        fetch(`${backendURL}/admin/judges/remove-users`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -309,7 +310,7 @@ const ManageJudges = observer(() => {
     };
 
     const addNewPotentialJudge = (newId, callback) => {
-        fetch('http://localhost:3001/admin/judges/add-potential-judge', {
+        fetch(`${backendURL}/admin/judges/add-potential-judge`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -346,7 +347,7 @@ const ManageJudges = observer(() => {
 
         if (newPreference) {
             try {
-                const response = await fetch('http://localhost:3001/admin/preferences/add', {
+                const response = await fetch(`${backendURL}/admin/preferences/add`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -368,7 +369,7 @@ const ManageJudges = observer(() => {
 
     const removePreferences = async () => {
         try {
-            const response = await fetch('http://localhost:3001/admin/preferences');
+            const response = await fetch(`${backendURL}/admin/preferences`);
             const preferences = await response.json();
 
             Swal.fire({
@@ -442,7 +443,7 @@ const ManageJudges = observer(() => {
 
     const removeSelectedPreferences = async (selectedPreferences) => {
         try {
-            const response = await fetch('http://localhost:3001/admin/preferences/remove', {
+            const response = await fetch(`${backendURL}/admin/preferences/remove`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -481,7 +482,7 @@ const ManageJudges = observer(() => {
                 <h2>Preference Subjects Options</h2>
                 <button className="admin-button" onClick={addNewPreference} style={{ marginRight: '10px' }}>Add Preference</button>
                 <button className="admin-button" onClick={removePreferences}>Remove Preference</button>
-                <ExportData url='http://localhost:3001/admin/judges/judgesList' />
+                <ExportData url='${backendURL}/admin/judges/judgesList' /> //this is a bug!
             </div>
             <AdminButtons />
         </div>

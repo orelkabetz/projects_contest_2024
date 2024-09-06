@@ -4,6 +4,8 @@ import Swal from 'sweetalert2';
 import styled from 'styled-components';
 import axios from 'axios'; 
 import AdminButtons from './AdminButtons';
+import { backendURL } from '../../config';
+
 
 // Styled components for layout and button
 const Container = styled.div`
@@ -100,7 +102,7 @@ const AssignProjectsToJudges = () => {
           };
   
           // Send to the backend
-          const response = await axios.post('http://localhost:3001/admin/assignProjects', assignmentData, {
+          const response = await axios.post(`${backendURL}/admin/assignProjects`, assignmentData, {
             headers: {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',

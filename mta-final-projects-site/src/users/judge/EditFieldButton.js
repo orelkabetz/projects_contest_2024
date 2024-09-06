@@ -1,6 +1,8 @@
 import React from 'react';
 import Swal from 'sweetalert2';
 import './ProfileSetup.css';
+import { backendURL } from '../../config';
+
 
 const EditFieldButton = ({ field, user, updateUser }) => {
   const handleEdit = () => {
@@ -19,7 +21,7 @@ const EditFieldButton = ({ field, user, updateUser }) => {
     }).then((result) => {
       if (result.isConfirmed) {
         const newValue = result.value;
-        const url = `http://localhost:3001/user/updateField`;
+        const url = `${backendURL}/user/updateField`;
         fetch(url, {
           method: 'POST',
           headers: {

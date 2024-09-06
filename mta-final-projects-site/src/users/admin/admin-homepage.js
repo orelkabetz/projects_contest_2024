@@ -5,6 +5,7 @@ import { storages } from '../../stores';
 import AdminButtons from './AdminButtons';
 import Feed from '../../utils/Feed';
 import axios from 'axios';
+import { backendURL } from '../../config';
 
 const AdminHome = observer(() => {
     const navigate = useNavigate();
@@ -17,8 +18,7 @@ const AdminHome = observer(() => {
         // Fetch and cache the judge and project maps when the admin page loads
         const fetchJudgeAndProjectMaps = async () => {
             try {
-                // const response = await axios.get('/http://localhost:3001/admin/judgesProjectsMaps');
-                const response = await fetch('http://localhost:3001/admin/judgesProjectsMaps', {
+                const response = await fetch(`${backendURL}/admin/judgesProjectsMaps`, {
                     headers: {
                         'Content-Type': 'application/json',
                     },

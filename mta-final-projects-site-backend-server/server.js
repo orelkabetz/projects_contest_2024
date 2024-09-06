@@ -10,7 +10,10 @@ const app = express();
 const port = process.env.PORT || 3001; // Set the port for the server to listen on
 
 // Enable CORS for all requests
-app.use(cors());
+app.use(cors({
+  origin: '*', // Allow requests from any origin
+  credentials: true // If using cookies or authorization headers
+}));
 
 // Middleware to parse JSON request bodies
 app.use(bodyParser.json());
@@ -25,6 +28,6 @@ app.use('/admin', adminRouter);
 app.use('/upload', uploadRouter);
 
 // Start and init the server
-app.listen(port, async () => {
+app.listen(port, '0.0.0.0', async () => {
   console.log(`Server is running on port ${port}`);
 });

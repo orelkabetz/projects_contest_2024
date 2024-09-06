@@ -18,7 +18,7 @@ const ViewProjects = observer(() => {
             <BackButton route="/judge" />
             <h2>View Projects</h2>
             <h3>Welcome, {user.name}!</h3>
-            <ProjectList endpoint="http://localhost:3001/admin/projects/projectsList" />
+            <ProjectList endpoint="${backendURL}/admin/projects/projectsList" /> //Bug
         </div>
     );
 });

@@ -4,6 +4,7 @@ import ProjectList from '../../ProjectsList'; // Ensure the correct path to Proj
 import BackButton from '../../utils/BackButton';
 import ExportData from './export-data';
 import AdminButtons from './AdminButtons';
+import { backendURL } from '../../config';
 
 const ManageProjects = observer(() => {
     const handleFileUpload = (event) => {
@@ -12,7 +13,7 @@ const ManageProjects = observer(() => {
             const formData = new FormData();
             formData.append('file', file);
 
-            fetch('http://localhost:3001/upload/projects', {
+            fetch(`${backendURL}/upload/projects`, {
                 method: 'POST',
                 body: formData,
             })
@@ -38,7 +39,7 @@ const ManageProjects = observer(() => {
             </div>
             <div>
                 <h2>Projects List</h2>
-                <ProjectList endpoint="http://localhost:3001/admin/projects/projectsList" />
+                <ProjectList endpoint="${backendURL}/admin/projects/projectsList" /> // This is a bug!
                 <ExportData></ExportData>
             </div>
             <AdminButtons />

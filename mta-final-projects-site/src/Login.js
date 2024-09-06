@@ -4,6 +4,8 @@ import './Login.css';
 import userStorage from './stores/UserStorage';
 import { observer } from 'mobx-react-lite';
 import { storages } from './stores';
+import { backendURL } from './config';
+
 
 const Login = observer(() => {
   const {userStorage} = storages
@@ -33,7 +35,7 @@ const Login = observer(() => {
 
   const sendLoginRequest = (userID, password) => {
     // Send login request to the server
-    fetch('http://localhost:3001/login', {
+    fetch(`${backendURL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

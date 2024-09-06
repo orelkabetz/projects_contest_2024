@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import Login from './Login';
 import './Login.js';
 import { observer } from 'mobx-react-lite';
+import { backendURL } from './config.js';
+
 
 const Register = observer(() => {
   const [userID, setUsernameID] = useState('');
@@ -18,7 +20,7 @@ const Register = observer(() => {
 
   const sendRegisterRequestWithFullInfo = (userID, fullName, email, password) => {
     // Send register request to the server
-    fetch('http://localhost:3001/registerFullInfo', {
+    fetch(`${backendURL}/registerFullInfo`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

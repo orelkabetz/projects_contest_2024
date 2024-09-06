@@ -3,6 +3,7 @@ import Post from './Post';
 import axios from 'axios';
 import styled from 'styled-components';
 import SearchBar from './SearchBar'; // Import SearchBar component
+import { backendURL } from '../../src/config';
 
 // Styled components for Feed
 const FeedContainer = styled.div`
@@ -44,7 +45,7 @@ const Feed = () => {
     const fetchProjects = async (query = '') => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:3001/admin/projects/projectsList${query}`);
+            const response = await axios.get(`${backendURL}/admin/projects/projectsList${query}`);
             let fetchedProjects = response.data;
 
             // Shuffle the projects array
