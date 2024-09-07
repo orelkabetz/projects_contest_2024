@@ -8,6 +8,7 @@ getCollections()
     // Remove selected IDs from the database
     router.post('/judges/remove-ids', async (req, res) => {
       const { ids } = req.body;
+
       try {
           const result = await collections.potential_users.deleteMany({ ID: { $in: ids } });
           res.json(result);
@@ -31,7 +32,7 @@ getCollections()
 
     router.get('/judges/judgesList', async (req, res) => {
       try {
-        const judges = await collections.users.find({type: 'judge'}, { projection: { name: 1, ID: 1} }).toArray();
+        const judges = await collections.users.find({}, { projection: { name: 1, ID: 1} }).toArray();
         res.json(judges);
       } catch (error) {
         console.error('Error fetching judges:', error);
@@ -86,6 +87,23 @@ getCollections()
             };
         }
 
+        router.get('/projects/getById', async (req, res) => {
+          try {
+            const { projectNumber } = req.query;
+            const project = await collections.project_schemas.findOne({ ProjectNumber: projectNumber });
+      
+              if (!project) {
+                console.log('Project not found')
+                  return res.status(404).json({ error: 'Project not found' });
+              }
+      
+              res.json(project);
+          } catch (error) {
+              console.error('Error fetching project:', error);
+              res.status(500).json({ error: 'Failed to fetch project: ',error });
+          }
+      });
+
         const projects = await collections.project_schemas.find(query).toArray();
         res.json(projects);
     } catch (error) {
@@ -93,6 +111,119 @@ getCollections()
         res.status(500).json({ error: 'An error occurred while fetching projects' });
     }
 });
+
+router.put('/projects/update', async (req, res) => {
+  try {
+      const { projectNumber } = req.query; //original project number
+      console.log(projectNumber);
+      console.log(req.body);
+      console.log(req.query);
+      const {
+          ProjectNumber, // New project number 
+          Title,
+          ProjectOwners,
+          ProjectInfo,
+          ProjectImage,
+          GithubLink,
+          CourseOfStudy,
+          StudentName,
+          StudentEmail,
+          StudentPhone,
+      } = req.body; 
+
+      // Update the project with the new data, including the new ProjectNumber
+      await collections.project_schemas.updateOne(
+          { ProjectNumber: projectNumber },
+          {
+              $set: {
+                  ProjectNumber,
+                  Title,
+                  ProjectOwners,
+                  ProjectInfo,
+                  ProjectImage,
+                  GithubLink,
+                  CourseOfStudy,
+                  StudentName,
+                  StudentEmail,
+                  StudentPhone,
+              },
+          }
+      );
+
+      res.json({ message: 'Project updated successfully' });
+  } catch (error) {
+      console.error('Error updating project:', error);
+      res.status(500).json({ error: 'Failed to update project' });
+  }
+});
+
+router.post('/projects/remove', async (req, res) => {
+  const { projectNumber } = req.body;
+
+  if (!projectNumber) {
+      return res.status(400).json({ message: 'Project number is required' });
+  }
+
+  try {
+      const deletedProject = await collections.project_schemas.findOneAndDelete({ ProjectNumber: projectNumber });
+
+      if (deletedProject) {
+          res.status(200).json({ message: `Project with number ${projectNumber} deleted successfully.` });
+      } else {
+          res.status(404).json({ message: `Project with number ${projectNumber} not found.` });
+      }
+  } catch (error) {
+      console.error('Error deleting project:', error);
+      res.status(500).json({ message: 'An error occurred while deleting the project' });
+  }
+});
+
+router.post('/projects/add', async (req, res) => {
+  console.log('Reached add project');
+  console.log(req.body);
+  const newProject  = req.body;
+
+  if (!newProject.ProjectNumber || !newProject.Title || !newProject.WorkshopName || !newProject.StudentName) {
+    return res.status(400).json({ message: 'Please provide all required fields.' });
+  }
+
+  try {
+    const result = await collections.project_schemas.insertOne(newProject);
+    res.status(201).json({ message: 'Project added successfully!', projectId: result.insertedId });
+  } catch (error) {
+      console.error('Error adding project:', error);
+      res.status(500).json({ message: 'An error occurred while adding project' });
+  }
+});
+
+router.get('/projects/workshops', async (req, res) => {
+  try {
+    console.log('Reached workshops');
+    const workshops = await collections.project_schemas.aggregate([
+      {
+        $group: {
+          _id: { WorkshopId: '$WorkshopId', WorkshopName: '$WorkshopName' }
+        }
+      },
+      { 
+        $project: {
+          _id: 0,
+          WorkshopId: '$_id.WorkshopId',
+          WorkshopName: '$_id.WorkshopName'
+        }
+      }
+    ]).toArray();
+
+    console.log(workshops);
+
+    res.status(200).json(workshops);
+  } catch (error) {
+    console.error('Error fetching workshops:', error);
+    res.status(500).json({ error: 'An error occurred while fetching workshops' });
+  }
+});
+
+
 
 // Route to get all preferences
 
@@ -117,6 +248,7 @@ router.get('/preferences', async (req, res) => {
     }
   });
 
+
   // Route to remove preferences
   router.post('/preferences/remove', async (req, res) => {
     const { preferences } = req.body;
@@ -128,6 +260,7 @@ router.get('/preferences', async (req, res) => {
       res.status(500).json({ error: 'An error occurred while removing the preferences' });
     }
   });
+
 
   router.get('/grades', async (req, res) => {
     try {
@@ -218,10 +351,10 @@ router.get('/preferences', async (req, res) => {
     }
   });
 
-
   })
   .catch((err) => {
     console.error('Error getting collections:', err);
   });
+
 
 module.exports = router;

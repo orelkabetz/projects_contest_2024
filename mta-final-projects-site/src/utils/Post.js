@@ -145,6 +145,7 @@ const Post = ({ project, onGrade, showGradeButton }) => {
             />
             <Content><strong>Workshop Name:</strong> {project.WorkshopName}</Content>
             <Content><strong>Workshop ID:</strong> {project.WorkshopId}</Content>
+            <Content><strong>Project ID:</strong> {project.ProjectNumber}</Content>
             <Content><strong>Project Owners:</strong> {project.ProjectOwners}</Content>
             <Content><strong>Year:</strong> {project.ProjectYear}</Content>
             <Content><strong>Lecturer:</strong> {project.Lecturer}</Content>
