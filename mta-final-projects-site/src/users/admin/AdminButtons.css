@@ -1,12 +1,8 @@
-.admin-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Optional: Center the buttons horizontally */
-  }
   
   .admin-buttons {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 16px;
     margin-top: 20px; /* Adjusted for some spacing at the top */
   }
@@ -44,4 +40,18 @@
   .logout-button:hover {
     color: #d33;
   }
+
+  .admin-header h2, admin.header h3 {
+    font-size: 20px;
+    color: #165ea1;
+    margin-bottom: 15px;
+  }
+
+  .admin-header h1{
+    font-size: 50px;
+    color: #165ea1;
+    margin-bottom: 15px;
+  }
+
+  
   

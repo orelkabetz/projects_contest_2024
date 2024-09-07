@@ -463,26 +463,22 @@ const ManageJudges = observer(() => {
     };
 
     return (
-        <div>
+        <div className="admin-buttons">
             <h1>Manage Judges</h1>
-            <div>
-                <BackButton route="/admin" />
-                <h2>Upload Potential Judges CSV</h2>
-                <input type="file" onChange={handleFileUpload} accept=".csv" />
-            </div>
+            <h2>Upload Potential Judges CSV</h2>
+            <input type="file" onChange={handleFileUpload} accept=".csv" />
             <div>
                 <h2>Judges List</h2>
-                <button onClick={openJudgesListModal}>Show Judges List</button>
+                <button className='admin-button' onClick={openJudgesListModal}>Show Judges List</button>
             </div>
-            <div>
                 <h2>Potential Judges List</h2>
-                <button onClick={openPotentialJudgesListModal}>Show Potential Judges List</button>
-            </div>
-            <div>
+                <button className='admin-button' onClick={openPotentialJudgesListModal}>Show Potential Judges List</button>
+            <div className="admin-buttons">
                 <h2>Preference Subjects Options</h2>
-                <button className="admin-button" onClick={addNewPreference} style={{ marginRight: '10px' }}>Add Preference</button>
+                <button className="admin-button" onClick={addNewPreference}>Add Preference</button>
                 <button className="admin-button" onClick={removePreferences}>Remove Preference</button>
-                <ExportData url='${backendURL}/admin/judges/judgesList' /> //this is a bug!
+                <ExportData url='http://localhost:3001/admin/judges/judgesList' />
+                <BackButton route="/admin" />
             </div>
             <AdminButtons />
         </div>
