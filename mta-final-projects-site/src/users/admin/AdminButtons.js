@@ -32,8 +32,8 @@ const AdminButtons = observer(() => {
     navigate("/admin/manage-projects-grades");
   };
 
-  const handleGradesClick = () => {
-    console.log('Not implemented');
+  const handlePodiumClick = () => {
+    navigate("/admin/podium");
   };
 
   const handleExportToCsvClick = async () => {
@@ -142,6 +142,10 @@ const AdminButtons = observer(() => {
           <div className="admin-button" onClick={handleExportToCsvClick}>
             Export Projects to CSV
             <AiOutlineFileAdd size={20} style={{ marginLeft: '10px' }} />
+          </div>
+          <div className="admin-button" onClick={handlePodiumClick}>
+            Podium
+            <AiOutlineStar size={20} style={{ marginLeft: '10px' }} />
           </div>
           <div className="admin-button logout-button" onClick={handleLogout} style={{ marginTop: 'auto' }}>
             Logout

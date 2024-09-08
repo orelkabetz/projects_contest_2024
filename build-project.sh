@@ -5,6 +5,7 @@ echo 'Git pull'
 git fetch
 git clean -f
 git reset --hard
+git pull
 echo 'Docker build'
 docker build --platform linux/amd64 -t gcr.io/final-project-427104/frontend-app .
 echo 'Docker push'
@@ -17,6 +18,7 @@ echo 'Git pull'
 git fetch
 git clean -f
 git reset --hard
+git pull
 echo 'Docker build'
 docker build --platform linux/amd64 -t gcr.io/final-project-427104/backend-app .
 echo 'Docker push'

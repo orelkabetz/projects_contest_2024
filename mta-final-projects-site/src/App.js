@@ -12,6 +12,7 @@ import ManageProjects from './users/admin/manage-projects';
 import AssignProjects from './users/admin/assign-projects';
 import ManageGrades from './users/admin/manage-projects-grades';
 import ExportData from './users/admin/export-data';
+import Podium from './users/admin/podium';
 import './App.css';
 import { observer } from 'mobx-react-lite';
 import { storages } from './stores';
@@ -106,6 +107,7 @@ const App = observer(() => {
             <Route path="assign-projects" element={<AssignProjects />} />
             <Route path="manage-projects-grades" element={<ManageGrades />} />
             <Route path="export-data" element={<ExportData />} />
+            <Route path="podium" element={<Podium />} />
           </Route>
         </Routes>
         <div className="chat-button-container">

@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { usersSerivce } = require('./users.service');
 const { getCollections } = require('../../DB/index');
+const Grade = require('../../DB/entities/grade.entity'); // Adjust the path based on your folder structure
+const projectsDB = require('../../DB/entities/project.entity')
 
 getCollections()
   .then((collections) => {
@@ -350,6 +352,76 @@ router.get('/preferences', async (req, res) => {
         res.status(500).json({ error: 'An error occurred while fetching data' });
     }
   });
+
+  router.get('/podium', async (req, res) => {
+    try {
+      // Aggregating the grades to calculate average scores for each project
+      const aggregatedGrades = await Grade.aggregate([
+        {
+          $group: {
+            _id: "$project_id", // Group by project_id
+            avgComplexity: { $avg: "$complexity" },
+            avgUsability: { $avg: "$usability" },
+            avgInnovation: { $avg: "$innovation" },
+            avgPresentation: { $avg: "$presentation" },
+            avgProficiency: { $avg: "$proficiency" },
+            avgTotal: { $avg: "$grade" } // Assuming 'grade' is the overall score
+          }
+        },
+        {
+          $sort: { avgTotal: -1 } // Sort by overall average in descending order
+        }
+      ]);
+  
+      // Prepare the full data by fetching project details using ProjectNumber
+      const podiumData = await Promise.all(aggregatedGrades.map(async (project) => {
+        const projectDetails = await projectsDB.findOne({ ProjectNumber: project._id });
+        
+        if (!projectDetails) {
+          console.warn(`Project not found for id: ${project._id}`);
+          return null; // Skip projects that are not found
+        }
+  
+        return {
+          project_id: project._id,
+          title: projectDetails.Title,
+          image: projectDetails.ProjectImage,
+          avgComplexity: project.avgComplexity,
+          avgUsability: project.avgUsability,
+          avgInnovation: project.avgInnovation,
+          avgPresentation: project.avgPresentation,
+          avgProficiency: project.avgProficiency,
+          avgTotal: project.avgTotal,
+        };
+      }));
+  
+      // Filter out any projects that were not found
+      const validPodiumData = podiumData.filter(p => p !== null);
+  
+      // Sort by individual categories and prepare top 3 lists
+      const topOverallProjects = [...validPodiumData].sort((a, b) => b.avgTotal - a.avgTotal).slice(0, 3);
+      const topComplexity = [...validPodiumData].sort((a, b) => b.avgComplexity - a.avgComplexity).slice(0, 3);
+      const topUsability = [...validPodiumData].sort((a, b) => b.avgUsability - a.avgUsability).slice(0, 3);
+      const topInnovation = [...validPodiumData].sort((a, b) => b.avgInnovation - a.avgInnovation).slice(0, 3);
+      const topPresentation = [...validPodiumData].sort((a, b) => b.avgPresentation - a.avgPresentation).slice(0, 3);
+      const topProficiency = [...validPodiumData].sort((a, b) => b.avgProficiency - a.avgProficiency).slice(0, 3);
+  
+      // Prepare the response with the aggregated and project details
+      res.json({
+        topOverallProjects,
+        topComplexity,
+        topUsability,
+        topInnovation,
+        topPresentation,
+        topProficiency,
+        allProjects: validPodiumData // Add all projects with avg scores and details
+      });
+  
+    } catch (error) {
+      console.error('Error fetching podium data:', error);
+      res.status(500).json({ message: 'Error fetching podium data' });
+    }
+  });  
 
   })
   .catch((err) => {
