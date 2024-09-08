@@ -88,7 +88,7 @@ const App = observer(() => {
   return (
     <Router>
       <div className="app-container">
-        <h1>MTA Projects Contest</h1>
+        <h2>MTA Projects Contest</h2>
         <Routes>
           <Route path="/" element={<AuthLayout/>}>
             <Route index element={<Login />} />
