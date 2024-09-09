@@ -2,7 +2,7 @@ import { saveAs } from 'file-saver';
 import axios from 'axios';
 import { observer } from 'mobx-react-lite';
 
-const ExportData = observer(({ url }) => {
+const ExportData = observer(({ url ,headers}) => {
     const fetchDataToExport = async () => {
         try {
             if (!url) {
@@ -10,7 +10,7 @@ const ExportData = observer(({ url }) => {
                 return;
             }
             console.log(`Fetching data from URL: ${url}`); // Debugging statement
-            const response = await axios.get(url);
+            const response = await axios.get(url, { headers });
             if (response.status !== 200) {
                 throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
             }

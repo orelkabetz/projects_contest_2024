@@ -48,7 +48,7 @@ const ManageProjects = observer(() => {
 
         if (projectNumber) {
             try {
-                const response = await fetch('http://localhost:3001/admin/projects/remove', {
+                const response = await fetch(`${backendURL}/admin/projects/remove`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ const ManageProjects = observer(() => {
     const handleAddNewProject = async () => {
         const fetchWorkshops = async () => {
             try {
-                const response = await fetch('http://localhost:3001/admin/projects/workshops');
+                const response = await fetch(`${backendURL}/admin/projects/workshops`);
                 if (response.ok) {
                     const workshops = await response.json();
                     return workshops;
@@ -187,7 +187,7 @@ const ManageProjects = observer(() => {
     
         if (newProject) {
             try {
-                const response = await fetch('http://localhost:3001/admin/projects/add', {
+                const response = await fetch(`${backendURL}/admin/projects/add`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -228,7 +228,7 @@ const ManageProjects = observer(() => {
             try {
                 const query = `?projectNumber=${encodeURIComponent(projectId)}`;
                 console.log(query);
-                const response = await fetch(`http://localhost:3001/admin/projects/getById${query}`);
+                const response = await fetch(`${backendURL}/admin/projects/getById${query}`);
                 
                 if (response.ok) {
                     const project = await response.json();
@@ -288,7 +288,7 @@ const ManageProjects = observer(() => {
                                 StudentPhone: document.getElementById('studentPhone').value,
                             };
         
-                            const response = await fetch(`http://localhost:3001/admin/projects/update${query}`, {
+                            const response = await fetch(`${backendURL}/admin/projects/update${query}`, {
                                 method: 'PUT',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -319,22 +319,22 @@ const ManageProjects = observer(() => {
     
 
     return (
+        <div className='admin-page-container'>
         <div className='admin-header'>
-            <h1>Manage Projects</h1>
+            <h2>Manage Projects</h2>
             <div className='admin-buttons'>
-                <h2>Upload Projects Data</h2>
+                <h3>Upload Projects Data</h3>
                 <input type="file" onChange={handleFileUpload} accept=".csv" />
                 <button className='admin-button' onClick={handleAddNewProject}>Add Project</button>
                 <button className='admin-button' onClick={handleRemoveProject}>Remove Project</button>
                 <button className='admin-button' onClick={handleEditProject}>Edit Project</button>
-                <ExportData></ExportData>
+                <ExportData url={`${backendURL}/admin/projects/projectsList`} />
             </div>
             <div>
-                <h2>Projects List</h2>
-                <ProjectList endpoint="http://localhost:3001/admin/projects/projectsList" />
                 <BackButton route="/admin" />
             </div>
             <AdminButtons />
+        </div>
         </div>
     );
 });

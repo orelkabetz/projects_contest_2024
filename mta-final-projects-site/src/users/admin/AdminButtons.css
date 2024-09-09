@@ -1,8 +1,17 @@
-  
+.admin-page-container {
+  padding: 20px;
+  background-color: #f0f8ff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  max-width: 800px;
+  margin: 20px auto;
+}
   .admin-buttons {
     display: flex;
     flex-direction: column;
+    align-self: center;
     align-items: center;
+    text-align: center;
     gap: 16px;
     margin-top: 20px; /* Adjusted for some spacing at the top */
   }
@@ -41,16 +50,39 @@
     color: #d33;
   }
 
-  .admin-header h2, admin.header h3 {
+  .admin-header h3 {
     font-size: 20px;
     color: #165ea1;
     margin-bottom: 15px;
+  }
+
+  .admin-header h2 {
+    font-size: 40px;
+    background-color: #ffffff;
+    color: #165ea1;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+    border-radius: 8px 8px 0 0;
   }
 
   .admin-header h1{
     font-size: 50px;
     color: #165ea1;
     margin-bottom: 15px;
+  }
+
+  .back-button {
+    padding: 10px 20px;
+    background-color: #ddd;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+  }
+  
+  .back-button:hover {
+    background-color: #ccc;
   }
 
   

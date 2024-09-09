@@ -17,6 +17,7 @@ const BackButtonContainer = styled.button`
   transition: background-color 0.3s ease;
   position: relative;
   overflow: hidden;
+  margin-top:20px;
 
   &:hover {
     background-color: #0e3f6d;
