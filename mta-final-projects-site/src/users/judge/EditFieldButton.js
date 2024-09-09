@@ -6,6 +6,7 @@ import { backendURL } from '../../config';
 
 const EditFieldButton = ({ field, user, updateUser }) => {
   const handleEdit = () => {
+    console.log(user);
     Swal.fire({
       title: `Edit ${field}`,
       input: field === 'password' ? 'password' : 'text',

@@ -34,7 +34,6 @@ const ProfileSetup = observer(() => {
       <AvailablePreferences  token={localStorage.getItem('token')} />
         <EditFieldButton className="profile_setup_button" field="email" user={user} updateUser={updateUser} />
         <EditFieldButton className="profile_setup_button" field="password" user={user} updateUser={updateUser} />
-        <EditFieldButton className="profile_setup_button" field="company" user={user} updateUser={updateUser} />
         <EditFieldButton className="profile_setup_button" field="name" user={user} updateUser={updateUser} />
       </div>
       <div style={{ height: '40px' }} /> {/* Spacer element */}
