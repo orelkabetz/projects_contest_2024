@@ -17,6 +17,7 @@ const jumpAnimation = keyframes`
 const PodiumContainer = styled.div`
   text-align: center;
   margin-top: 20px;
+  backgroundColor: '#f0f8ff';
 `;
 
 const CategorySelector = styled.div`

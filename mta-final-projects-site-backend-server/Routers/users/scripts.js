@@ -4,8 +4,6 @@ const Grade = require('../../DB/entities/grade.entity'); // Ensure this is the c
 const axios = require('axios');
 const fs = require('fs');
 const FormData = require('form-data');
-import { backendURL } from '../../';
-
 
 // Function to upload the projects CSV file
 async function uploadProjectsCSV(filePath) {
@@ -15,7 +13,7 @@ async function uploadProjectsCSV(filePath) {
     form.append('file', fs.createReadStream(filePath));
 
     // Make the POST request to the /projects endpoint
-    const response = await axios.post(`${backendURL}/uploads/projects`, form, {
+    const response = await axios.post('${backendURL}/uploads/projects', form, {
       headers: {
         ...form.getHeaders(),
       },
@@ -74,6 +72,97 @@ async function insertGradeTest(projectId) {
   }
 }
 
+const projectIds = [
+  "15006804",
+  "15005912",
+  "15005908",
+  "15006805",
+  "15006504",
+  "15006802",
+  "15006603",
+  "15005909",
+  "15006103",
+  "15006502",
+  "15001215",
+  "15005914",
+  "15002921",
+  "15001217",
+  "15005723",
+  "15005911",
+  "15006409",
+  "15006006",
+  "15006412",
+  "15006412",
+  "15005722",
+  "15006704",
+  "15006104"
+];
+
+
+const judgeIds = [
+  '111111111', '123123123', '123454321', '123456789', '209512331', 
+  '276143144', '315668955', '524810118', '591302155', '702626296', 
+  '130996085'
+];
+
+// Function to generate a random integer between min and max (inclusive)
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Function to insert random grades for each project and judge
+async function insertRandomGrades() {
+  try {
+    // Track the number of grades inserted
+    let gradeCount = 0;
+
+    // To ensure unique pairs of project_id and judge_id, use a Set
+    const insertedPairs = new Set();
+
+    while (gradeCount < 50) {
+      const randomProjectIndex = getRandomInt(0, projectIds.length - 1);
+      const randomJudgeIndex = getRandomInt(0, judgeIds.length - 1);
+
+      const projectId = projectIds[randomProjectIndex];
+      const judgeId = judgeIds[randomJudgeIndex];
+
+      // Ensure unique combinations of project_id and judge_id
+      const pairKey = `${projectId}-${judgeId}`;
+      if (!insertedPairs.has(pairKey)) {
+        const complexity = getRandomInt(1, 10);
+        const usability = getRandomInt(1, 10);
+        const innovation = getRandomInt(1, 10);
+        const presentation = getRandomInt(1, 10);
+        const proficiency = getRandomInt(1, 10);
+        const totalGrade = complexity + usability + innovation + presentation + proficiency;
+
+        const gradeData = new Grade({
+          project_id: projectId,
+          judge_id: judgeId,
+          complexity,
+          usability,
+          innovation,
+          presentation,
+          proficiency,
+          additionalComment: `Randomly generated grade for project ${projectId} by judge ${judgeId}`,
+          grade: totalGrade,
+        });
+
+        // Save grade data and update the counter
+        await gradeData.save();
+        insertedPairs.add(pairKey);
+        gradeCount++;
+        console.log(`Grade #${gradeCount} for project ${projectId} by judge ${judgeId} saved.`);
+      }
+    }
+
+    console.log('50 random grades inserted successfully.');
+  } catch (error) {
+    console.error('Error inserting random grades:', error);
+  }
+}
+
+
 
 // Main function to run your scripts
 async function main() {
@@ -81,7 +170,7 @@ async function main() {
   // await uploadProjectsCSV(filePath);
 
   // Call other functions or scripts you want to run
-  await insertProjectsJudgesGroup(); // Example of another function
+  await insertRandomGrades(); // Example of another function
 }
 
 // Run the main function
