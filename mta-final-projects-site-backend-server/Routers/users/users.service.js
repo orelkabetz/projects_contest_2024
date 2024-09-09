@@ -35,7 +35,8 @@ class UsersService {
         token,
         user: {
           type: user.type,
-          name: user.name
+          name: user.name,
+          email: user.email
         }
       };
     } catch (error) {

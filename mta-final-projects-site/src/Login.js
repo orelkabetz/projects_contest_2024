@@ -48,6 +48,7 @@ const Login = observer(() => {
       if (data.success) {
         // Store the token in local storage or session storage
         localStorage.setItem('token', data.token);
+        console.log(data.token);
         userStorage.user = data.user;
         // Redirect based on user type
         if (data.user.type === 'admin') {
