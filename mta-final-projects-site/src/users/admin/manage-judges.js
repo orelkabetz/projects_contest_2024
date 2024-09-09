@@ -112,20 +112,32 @@ const ManageJudges = observer(() => {
     
     const openJudgesListModal = () => {
         Swal.fire({
-            title: 'Registered Judges',
-            html: '<div id="judgesListContainer"></div>',
+            title: '<span style="font-size: 75%;">Registered Judges</span>',
+            html: `
+                <div id="judgesListContainer" style="font-size: 75%; display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <span>Judge 1</span>
+                        <input type="checkbox" style="margin-left: auto; margin-right: 0;" />
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <span>Judge 2</span>
+                        <input type="checkbox" style="margin-left: auto; margin-right: 0;" />
+                    </div>
+                    <!-- More judge entries can go here -->
+                </div>`,
             showCancelButton: true,
-            confirmButtonText: 'Remove Selected Judges',
-            cancelButtonText: 'Close',
+            confirmButtonText: '<span style="font-size: 75%;">Remove Selected Judges</span>',
+            cancelButtonText: '<span style="font-size: 75%;">Close</span>',
             preConfirm: () => {
                 const selectedJudges = JSON.parse(localStorage.getItem('selectedJudges')) || [];
                 removeSelectedJudges(selectedJudges);
             },
             didOpen: () => {
-                renderJudgesList();
+                renderJudgesList(); // Modify this to generate checkboxes aligned to the right
             },
         });
     };
+    
     
     const renderJudgesList = () => {
         const judgesListContainer = document.getElementById('judgesListContainer');
@@ -170,18 +182,17 @@ const ManageJudges = observer(() => {
                 )
                 .map((judge, index) => (
                   <li key={judge.ID} style={{ marginBottom: '10px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', borderRadius: '6px', border: '1px solid #ccc', padding: '10px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '6px', border: '1px solid #ccc', padding: '10px' }}>
                       <label htmlFor={`judge-${index}`} style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0 }}>
                         {judge.name} (ID: {judge.ID})
                       </label>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', minWidth: '45px' }}>
-                        <input
-                          type="checkbox"
-                          id={`judge-${index}`}
-                          checked={selectedJudges.includes(judge.ID.toString())}
-                          onChange={() => toggleSelection(judge.ID.toString())}
-                        />
-                      </div>
+                      <input
+                        type="checkbox"
+                        id={`judge-${index}`}
+                        style={{ marginRight: '0', marginLeft: 'auto' }} // Ensure checkbox sticks to the right without margin
+                        checked={selectedJudges.includes(judge.ID.toString())}
+                        onChange={() => toggleSelection(judge.ID.toString())}
+                      />
                     </div>
                   </li>
                 ))}
@@ -213,11 +224,11 @@ const ManageJudges = observer(() => {
 
     const openPotentialJudgesListModal = () => {
         Swal.fire({
-            title: 'Potential Judges',
-            html: '<div id="potentialJudgesListContainer"></div>',
+            title: '<span style="font-size: 75%; color: #175a94;">Potential Judges</span>',
+            html: '<div id="potentialJudgesListContainer" style="font-size: 75%; color: #175a94;"></div>',
             showCancelButton: true,
-            confirmButtonText: 'Remove Selected Potential Judges',
-            cancelButtonText: 'Close',
+            confirmButtonText: '<span style="font-size: 75%; color:;">Remove Selected Potential Judges</span>',
+            cancelButtonText: '<span style="font-size: 75%; color: ;">Close</span>',
             preConfirm: () => {
                 const selectedIds = JSON.parse(localStorage.getItem('selectedPotentialJudges')) || [];
                 removeSelectedIdsInternal(selectedIds);
@@ -331,13 +342,13 @@ const ManageJudges = observer(() => {
 
     const addNewPreference = async () => {
         const { value: newPreference } = await Swal.fire({
-            title: 'Add New Preference',
+            title: '<span style="font-size: 75%; color: #175a94;">Add New Preference</span>',
             input: 'text',
-            inputLabel: 'Preference Name',
+            html: '<label style="font-size: 75%; color: #175a94;" for="swal-input1">Preference Name</label>',
             inputPlaceholder: 'Enter the new preference',
             showCancelButton: true,
-            confirmButtonText: 'Save',
-            cancelButtonText: 'Cancel',
+            confirmButtonText: '<span style="font-size: 75%;">Save</span>',
+            cancelButtonText: '<span style="font-size: 75%;">Cancel</span>',
             inputValidator: (value) => {
                 if (!value) {
                     return 'Please enter a preference name';
@@ -371,13 +382,13 @@ const ManageJudges = observer(() => {
         try {
             const response = await fetch(`${backendURL}/admin/preferences`);
             const preferences = await response.json();
-
+    
             Swal.fire({
-                title: 'Remove Preferences',
-                html: '<div id="preferencesListContainer"></div>',
+                title: '<span style="font-size: 75%; color: #175a94;">Remove Preferences</span>',
+                html: '<div id="preferencesListContainer" style="font-size: 75%; color: #175a94;"></div>',
                 showCancelButton: true,
-                confirmButtonText: 'Remove Selected Preferences',
-                cancelButtonText: 'Close',
+                confirmButtonText: '<span style="font-size: 75%;">Remove Selected Preferences</span>',
+                cancelButtonText: '<span style="font-size: 75%;">Close</span>',
                 preConfirm: () => {
                     const selectedPreferences = JSON.parse(localStorage.getItem('selectedPreferences')) || [];
                     removeSelectedPreferences(selectedPreferences);
@@ -391,7 +402,7 @@ const ManageJudges = observer(() => {
             Swal.fire('Error', 'An error occurred while fetching the preferences', 'error');
         }
     };
-
+    
     const renderPreferencesList = (preferences) => {
         const preferencesListContainer = document.getElementById('preferencesListContainer');
         if (preferencesListContainer) {
@@ -468,14 +479,11 @@ const ManageJudges = observer(() => {
             <h2>Manage Judges</h2>
             <h3>Upload Potential Judges CSV</h3>
             <input type="file" onChange={handleFileUpload} accept=".csv" />
-                <h3>Judges List</h3>
                 <div className="admin-buttons">
                 <button className='admin-button' onClick={openJudgesListModal}>Show Judges List</button>
-                <h3>Potential Judges List</h3>
                 <button className='admin-button' onClick={openPotentialJudgesListModal}>Show Potential Judges List</button>
                 </div>
             <div className="admin-buttons">
-                <h3>Preference Subjects Options</h3>
                 <button className="admin-button" onClick={addNewPreference}>Add Preference</button>
                 <button className="admin-button" onClick={removePreferences}>Remove Preference</button>
                 <ExportData url={`${backendURL}/admin/judges/judgesList`} />

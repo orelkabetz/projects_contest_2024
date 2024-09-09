@@ -83,36 +83,36 @@ const ManageProjects = observer(() => {
         };
     
         const workshops = await fetchWorkshops();
-
+    
         const { value: newProject } = await Swal.fire({
-            title: 'Add New Project',
+            title: '<span style="font-size: 75%; color: #175a94;">Add New Project</span>',
             html: `
-                <select id="workshopIdSelect" class="swal2-input">
+                <select id="workshopIdSelect" class="swal2-input" style="font-size: 75%; color: #175a94;">
                     <option value="" disabled selected>Select Workshop</option>
                     ${workshops.map(workshop => `<option value="${workshop.WorkshopId}|${workshop.WorkshopName}">${workshop.WorkshopId} (${workshop.WorkshopName})</option>`).join('')}
                     <option value="new">New Workshop</option>
                 </select>
-                <input id="projectNumber" class="swal2-input" placeholder="Project Number" />
-                <input id="title" class="swal2-input" placeholder="Project Title" />
-                <input id="projectOwners" class="swal2-input" placeholder="Project Owners" />
-                <input id="projectInfo" class="swal2-input" placeholder="Project Information" />
-                <input id="projectImage" class="swal2-input" placeholder="Project Image" />
-                <input id="githubLink" class="swal2-input" placeholder="Github link" />
-                <input id="courseOfStudy" class="swal2-input" placeholder="Course Of Study" />
-                <input id="studentName" class="swal2-input" placeholder="Student Name" />
-                <input id="studentEmail" class="swal2-input" placeholder="Student Email" />
-                <input id="studentPhone" class="swal2-input" placeholder="Student Phone" />
-                <input id="lecturer" class="swal2-input" placeholder="Lecturer" />
+                <input id="projectNumber" class="swal2-input" placeholder="Project Number" style="font-size: 75%; color: #175a94;" />
+                <input id="title" class="swal2-input" placeholder="Project Title" style="font-size: 75%; color: #175a94;" />
+                <input id="projectOwners" class="swal2-input" placeholder="Project Owners" style="font-size: 75%; color: #175a94;" />
+                <input id="projectInfo" class="swal2-input" placeholder="Project Information" style="font-size: 75%; color: #175a94;" />
+                <input id="projectImage" class="swal2-input" placeholder="Project Image" style="font-size: 75%; color: #175a94;" />
+                <input id="githubLink" class="swal2-input" placeholder="Github link" style="font-size: 75%; color: #175a94;" />
+                <input id="courseOfStudy" class="swal2-input" placeholder="Course Of Study" style="font-size: 75%; color: #175a94;" />
+                <input id="studentName" class="swal2-input" placeholder="Student Name" style="font-size: 75%; color: #175a94;" />
+                <input id="studentEmail" class="swal2-input" placeholder="Student Email" style="font-size: 75%; color: #175a94;" />
+                <input id="studentPhone" class="swal2-input" placeholder="Student Phone" style="font-size: 75%; color: #175a94;" />
+                <input id="lecturer" class="swal2-input" placeholder="Lecturer" style="font-size: 75%; color: #175a94;" />
                 
                 <div id="newWorkshopFields" style="display: none;">
-                    <input id="newWorkshopId" class="swal2-input" placeholder="New Workshop ID" />
-                    <input id="newWorkshopName" class="swal2-input" placeholder="New Workshop Name" />
+                    <input id="newWorkshopId" class="swal2-input" placeholder="New Workshop ID" style="font-size: 75%; color: #175a94;" />
+                    <input id="newWorkshopName" class="swal2-input" placeholder="New Workshop Name" style="font-size: 75%; color: #175a94;" />
                 </div>
             `,
             focusConfirm: false,
             showCancelButton: true,
-            confirmButtonText: 'Save',
-            cancelButtonText: 'Cancel',
+            confirmButtonText: '<span style="font-size: 75%;">Save</span>',
+            cancelButtonText: '<span style="font-size: 75%;">Cancel</span>',
             didOpen: () => {
                 const workshopSelect = document.getElementById('workshopIdSelect');
                 const newWorkshopFields = document.getElementById('newWorkshopFields');
@@ -159,7 +159,7 @@ const ManageProjects = observer(() => {
                         return false;
                     }
     
-                    newWorkshop = { WorkshopId: workshopId, WorkshopName: workshopName};
+                    newWorkshop = { WorkshopId: workshopId, WorkshopName: workshopName };
                 } else {
                     // Existing workshop selected
                     [workshopId, workshopName] = workshopSelectValue.split('|');
@@ -206,6 +206,7 @@ const ManageProjects = observer(() => {
             }
         }
     };
+    
 
     const handleEditProject = async () => {
         // Step 1: Ask for Project ID
