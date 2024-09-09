@@ -98,7 +98,9 @@ const ManageGrades = () => {
 
     return (
         <div className="manage-grades-container">
+            <div className="admin-header">
             <h2>Manage Grades</h2>
+            </div>
             <GradesSearchBar
                 searchTerm={searchTerm}
                 searchField={searchField}

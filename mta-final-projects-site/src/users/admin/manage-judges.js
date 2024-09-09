@@ -463,22 +463,24 @@ const ManageJudges = observer(() => {
     };
 
     return (
-        <div className="admin-buttons">
-            <h1>Manage Judges</h1>
-            <h2>Upload Potential Judges CSV</h2>
+        <div className="admin-page-container">
+            <div className="admin-header">
+            <h2>Manage Judges</h2>
+            <h3>Upload Potential Judges CSV</h3>
             <input type="file" onChange={handleFileUpload} accept=".csv" />
-            <div>
-                <h2>Judges List</h2>
+                <h3>Judges List</h3>
+                <div className="admin-buttons">
                 <button className='admin-button' onClick={openJudgesListModal}>Show Judges List</button>
-            </div>
-                <h2>Potential Judges List</h2>
+                <h3>Potential Judges List</h3>
                 <button className='admin-button' onClick={openPotentialJudgesListModal}>Show Potential Judges List</button>
+                </div>
             <div className="admin-buttons">
-                <h2>Preference Subjects Options</h2>
+                <h3>Preference Subjects Options</h3>
                 <button className="admin-button" onClick={addNewPreference}>Add Preference</button>
                 <button className="admin-button" onClick={removePreferences}>Remove Preference</button>
-                <ExportData url='http://localhost:3001/admin/judges/judgesList' />
+                <ExportData url={`${backendURL}/admin/judges/judgesList`} />
                 <BackButton route="/admin" />
+                </div>
             </div>
             <AdminButtons />
         </div>

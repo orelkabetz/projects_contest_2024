@@ -19,6 +19,8 @@ import { storages } from './stores';
 import { FaComments } from 'react-icons/fa';  // Import the chat icon
 
 
+
+
 const AdminLayout = observer(() => {
   const navigate = useNavigate();
   const { userStorage, appStorage } = storages;
@@ -50,7 +52,15 @@ const AuthLayout = observer(() => {
   return <Outlet />;
 });
 
+
 const App = observer(() => {
+
+  const h1Style = {
+    fontSize: '50px',
+    color: '#165ea1',
+    marginBottom: '15px',
+  }; 
+
   const { userStorage, appStorage } = storages;
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
@@ -88,7 +98,7 @@ const App = observer(() => {
   return (
     <Router>
       <div className="app-container">
-        <h2>MTA Projects Contest</h2>
+        <h1 style={h1Style}>Projects Contest</h1>
         <Routes>
           <Route path="/" element={<AuthLayout/>}>
             <Route index element={<Login />} />

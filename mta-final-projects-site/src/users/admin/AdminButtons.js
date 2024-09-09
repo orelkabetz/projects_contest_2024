@@ -139,10 +139,6 @@ const AdminButtons = observer(() => {
             Manage Projects Grades
             <AiOutlineStar size={20} style={{ marginLeft: '10px' }} />
           </div>
-          <div className="admin-button" onClick={handleExportToCsvClick}>
-            Export Projects to CSV
-            <AiOutlineFileAdd size={20} style={{ marginLeft: '10px' }} />
-          </div>
           <div className="admin-button" onClick={handlePodiumClick}>
             Podium
             <AiOutlineStar size={20} style={{ marginLeft: '10px' }} />

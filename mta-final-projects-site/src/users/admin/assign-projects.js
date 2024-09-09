@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import axios from 'axios'; 
 import AdminButtons from './AdminButtons';
 import { backendURL } from '../../config';
+import BackButton from '../../utils/BackButton';
 
 
 // Styled components for layout and button
@@ -123,8 +124,11 @@ const AssignProjectsToJudges = () => {
   
 
   return (
+    <div className="admin-page-container">
     <Container>
+      <div className="admin-header">
       <h2>Assign Projects to Judges</h2>
+      </div>
 
       {/* Multi-select dropdown for judges */}
       <SelectContainer>
@@ -171,7 +175,12 @@ const AssignProjectsToJudges = () => {
       {/* Button to trigger assignment */}
       <Button onClick={handleAssignClick}>Assign Projects</Button>
       <AdminButtons />
+      <div>
+        <BackButton route="/admin" />
+      </div>
     </Container>
+    </div>
+    
     
   );
 };
