@@ -7,7 +7,6 @@ import AdminButtons from './AdminButtons';
 import { backendURL } from '../../config';
 import BackButton from '../../utils/BackButton';
 
-
 // Styled components for layout and button
 const Container = styled.div`
   display: flex;
@@ -15,8 +14,8 @@ const Container = styled.div`
   align-items: center;
   margin-top: 50px;
   gap: 20px;
-  width: 100%; /* Increase width */
-  max-width: 1600px; /* Double the max width */
+  width: 100%;
+  max-width: 1600px;
 `;
 
 const Button = styled.button`
@@ -44,36 +43,55 @@ const SelectContainer = styled.div`
   max-width: 70%;
 `;
 
-
-
-
 // Main component
 const AssignProjectsToJudges = () => {
   const [judges, setJudges] = useState([]);
   const [projects, setProjects] = useState([]);
+  const [preferences, setPreferences] = useState([]);
   const [selectedJudges, setSelectedJudges] = useState([]);
   const [selectedProjects, setSelectedProjects] = useState([]);
-  const [judgesListOpen, setJudgesListOpen] = useState(true); // For toggling the list visibility
-  const [projectsListOpen, setProjectsListOpen] = useState(true); // For toggling the list visibility
+  const [selectedPreferences, setSelectedPreferences] = useState([]);
 
   useEffect(() => {
+    // Fetch judges and projects from local storage
     const storedJudgeMap = JSON.parse(localStorage.getItem('judgeMap') || '{}');
     const storedProjectMap = JSON.parse(localStorage.getItem('projectMap') || '{}');
 
-    const judgeOptions = Object.keys(storedJudgeMap).map((id) => ({ value: id, label: storedJudgeMap[id] }));
-    const projectOptions = Object.keys(storedProjectMap).map((id) => ({ value: id, label: storedProjectMap[id] }));
+    const judgeOptions = Object.keys(storedJudgeMap).map(id => ({ value: id, label: storedJudgeMap[id] }));
+    const projectOptions = Object.keys(storedProjectMap).map(id => ({ value: id, label: storedProjectMap[id] }));
 
     setJudges(judgeOptions);
     setProjects(projectOptions);
+
+    // Fetch preferences from the API
+    const fetchPreferences = async () => {
+      try {
+        const response = await axios.get(`${backendURL}/preferences`);
+        console.log('Fetched preferences:', response.data); // Debugging line
+
+        // Directly use preferences values
+        const preferencesList = response.data.map(pref => ({
+          value: pref._id,
+          label: pref.ID|| 'Unnamed Preference'
+        }));
+
+        console.log('Mapped preferences:', preferencesList); // Debugging line
+        setPreferences(preferencesList);
+      } catch (error) {
+        console.error('Error fetching preferences:', error);
+        Swal.fire('Error', 'Failed to fetch preferences.', 'error');
+      }
+    };
+
+    fetchPreferences();
   }, []);
 
-  // Handle the assignment on button click
   const handleAssignClick = () => {
     if (selectedJudges.length === 0 || selectedProjects.length === 0) {
       Swal.fire('Error', 'Please select both judges and projects before assigning.', 'error');
       return;
     }
-  
+
     Swal.fire({
       title: 'Are you sure?',
       text: 'You are about to assign selected projects to the selected judges.',
@@ -85,103 +103,109 @@ const AssignProjectsToJudges = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          // Retrieve token from localStorage
           const token = localStorage.getItem('token');
-  
-          // Retrieve judgeMap and projectMap from localStorage
-          const judgeMap = JSON.parse(localStorage.getItem('judgeMap') || '{}');
-          const projectMap = JSON.parse(localStorage.getItem('projectMap') || '{}');
-  
-          // Map judge names and project names to their corresponding IDs
-          const projectIds = selectedProjects.map(project => project.value);
           const judgeIds = selectedJudges.map(judge => judge.value);
-  
-          // Prepare the data for the backend
+          const projectIds = selectedProjects.map(project => project.value);
+          const preferenceIds = selectedPreferences.map(pref => pref.value);
+
           const assignmentData = {
-            judgeIds, // Array of judge IDs
-            projectIds // Array of project IDs
+            judgeIds,
+            projectIds,
+            preferenceIds
           };
-  
-          // Send to the backend
+
           const response = await axios.post(`${backendURL}/admin/assignProjects`, assignmentData, {
             headers: {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
             },
           });
-  
-          // Check if the request was successful
+
           if (response.status === 200) {
             Swal.fire('Assigned!', 'Projects have been successfully assigned to judges.', 'success');
           }
         } catch (error) {
-          // Handle any errors
           Swal.fire('Error', error.response?.data?.error || 'An error occurred while assigning projects.', 'error');
         }
       }
     });
   };
-  
 
   return (
     <div className="admin-page-container">
-    <Container>
-      <div className="admin-header">
-      <h2>Assign Projects to Judges</h2>
-      </div>
+      <Container>
+        <div className="admin-header">
+          <h2>Assign Projects to Judges</h2>
+        </div>
 
-      {/* Multi-select dropdown for judges */}
-      <SelectContainer>
-        <Select
-          isMulti
-          options={judges}
-          placeholder="Select Judges"
-          onChange={setSelectedJudges}
-          value={selectedJudges}
-          closeMenuOnSelect={false} // Keep dropdown open for continuous selection
-          isOpen={judgesListOpen} // Control open/close state
-          styles={{
-            control: (base) => ({
-              ...base,
-              backgroundColor: 'rgba(240, 248, 255, 0.9)',
-              borderRadius: '8px',
-              border: '1px solid #175a94',
-            }),
-          }}
-        />
-      </SelectContainer>
+        {/* Multi-select dropdown for preferences */}
+        <SelectContainer>
+          <Select
+            isMulti
+            options={preferences}
+            placeholder="Select Preferences"
+            onChange={setSelectedPreferences}
+            value={selectedPreferences}
+            closeMenuOnSelect={false}
+            styles={{
+              control: (base) => ({
+                ...base,
+                backgroundColor: 'rgba(240, 248, 255, 0.9)',
+                borderRadius: '8px',
+                border: '1px solid #175a94',
+              }),
+            }}
+          />
+        </SelectContainer>
 
-      {/* Multi-select dropdown for projects */}
-      <SelectContainer>
-        <Select
-          isMulti
-          options={projects}
-          placeholder="Select Projects"
-          onChange={setSelectedProjects}
-          value={selectedProjects}
-          closeMenuOnSelect={false} // Keep dropdown open for continuous selection
-          isOpen={projectsListOpen} // Control open/close state
-          styles={{
-            control: (base) => ({
-              ...base,
-              backgroundColor: 'rgba(240, 248, 255, 0.9)',
-              borderRadius: '8px',
-              border: '1px solid #175a94',
-            }),
-          }}
-        />
-      </SelectContainer>
+        {/* Multi-select dropdown for judges */}
+        <SelectContainer>
+          <Select
+            isMulti
+            options={judges}
+            placeholder="Select Judges"
+            onChange={setSelectedJudges}
+            value={selectedJudges}
+            closeMenuOnSelect={false}
+            styles={{
+              control: (base) => ({
+                ...base,
+                backgroundColor: 'rgba(240, 248, 255, 0.9)',
+                borderRadius: '8px',
+                border: '1px solid #175a94',
+              }),
+            }}
+          />
+        </SelectContainer>
 
-      {/* Button to trigger assignment */}
-      <Button onClick={handleAssignClick}>Assign Projects</Button>
-      <AdminButtons />
-      <div>
-        <BackButton route="/admin" />
-      </div>
-    </Container>
+        {/* Multi-select dropdown for projects */}
+        <SelectContainer>
+          <Select
+            isMulti
+            options={projects}
+            placeholder="Select Projects"
+            onChange={setSelectedProjects}
+            value={selectedProjects}
+            closeMenuOnSelect={false}
+            styles={{
+              control: (base) => ({
+                ...base,
+                backgroundColor: 'rgba(240, 248, 255, 0.9)',
+                borderRadius: '8px',
+                border: '1px solid #175a94',
+              }),
+            }}
+          />
+        </SelectContainer>
+
+        {/* Button to trigger assignment */}
+        <Button onClick={handleAssignClick}>Assign Projects</Button>
+        <AdminButtons />
+        <div>
+          <BackButton route="/admin" />
+        </div>
+      </Container>
     </div>
-    
-    
   );
 };
 
