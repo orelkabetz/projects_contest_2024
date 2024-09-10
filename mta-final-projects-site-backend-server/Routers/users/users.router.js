@@ -252,22 +252,24 @@ getCollections()
     router.post('/gradeProject', async (req, res) => {
       try {
         // Verify the token and get the user info
-        const token = req.headers.authorization.split(' ')[1];
-        const user = await usersSerivce.checkToken(token);
-        
-        if (!user) {
-          return res.status(401).json({ error: 'Unauthorized' });
+        const token = req.headers.authorization?.split(' ')[1]; // Extract the token from the Authorization header
+        if (!token) {
+          return res.status(401).json({ error: 'Unauthorized: No token provided.' });
         }
-        
+
+        const user = await usersSerivce.checkToken(token);
+        if (!user) {
+          return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
+        }
+
         const judge_id = user.id; // Extract the judge's ID from the user object
         const grades = req.body; // Get the grades from the request body
         const projectId = req.query.projectId; // Get the project ID from the query string
-        console.log(projectId)
-        console.log(grades)
 
         if (!projectId) {
           return res.status(400).json({ error: 'Project ID is required.' });
         }
+
         // Check if the grade already exists for this judge and project
         const existingGrade = await collections.grades.findOne({ judge_id, project_id: projectId });
         if (existingGrade) {
@@ -278,7 +280,7 @@ getCollections()
         const totalGrade = grades.complexity + grades.usability + grades.innovation + grades.presentation + grades.proficiency;
 
         // Create a new grade document
-        const newGrade = new Grade({
+        const newGrade = {
           project_id: projectId,
           judge_id: judge_id,
           complexity: grades.complexity,
@@ -286,9 +288,11 @@ getCollections()
           innovation: grades.innovation,
           presentation: grades.presentation,
           proficiency: grades.proficiency,
-          additionalComment: grades.additionalComment,
+          additionalComment: grades.additionalComment || '',
           grade: totalGrade,
-        });
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
 
         await collections.grades.insertOne(newGrade);
         res.status(201).json({ message: 'Grade submitted successfully.' });
@@ -301,6 +305,7 @@ getCollections()
   .catch((error) => {
     console.error('Error setting up routes:', error);
   });
+
 
 
 

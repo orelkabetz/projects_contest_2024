@@ -152,7 +152,7 @@ const GradeProjects = observer(() => {
         try {
             const token = localStorage.getItem('token');
             const query = `?token=${token}&projectId=${selectedProject.ProjectNumber}`;
-
+    
             const response = await fetch(`${backendURL}/gradeProject${query}`, {
                 method: 'POST',
                 headers: {
@@ -161,22 +161,31 @@ const GradeProjects = observer(() => {
                 },
                 body: JSON.stringify(formData),
             });
-
+    
             if (!response.ok) {
                 const errorData = await response.json();
+                
+                if (response.status === 400) {
+                    setDialogOpen(false);  // Ensure the dialog is closed
+                    Swal.fire('Error', errorData.error || 'Grade for this project already exists.', 'error');
+                    return;
+                }
+    
                 throw new Error(errorData.message || 'Failed to submit grades');
             }
-
+    
             const data = await response.json();
             console.log('Submission successful:', data.message);
-
-            handleCloseDialog();  // Close dialog after successful submission
+    
+            setDialogOpen(false);  // Close dialog after successful submission
+            Swal.fire('Success', 'Grade submitted successfully!', 'success');
         } catch (error) {
             console.error('Error submitting grades:', error.message);
             Swal.fire('Error', error.message, 'error');
         }
     };
-
+    
+    
     const handleCancelClick = () => {
         setDialogOpen(false);  // Close the dialog before showing the Swal confirmation
 
